@@ -1,0 +1,34 @@
+---
+- name: build_and_deploy
+  gather_facts: no
+  hosts: all
+  tasks:
+  - name: install system dependencies
+    dnf:
+      name: 
+        - libselinux-python3
+      state: latest
+  #- name: create build directory
+  #  file: 
+  #    path: /root/tomcat-dockerfile
+  #    state: directory
+  #    owner: root
+  #    group: root
+  #    mode: '0755'
+  #- name: copy Dockerfile
+  #  copy:
+  #    src: "{{ project_path }}/files/Dockerfile"
+  #    dest: /root/tomcat-dockerfile
+  #    owner: root
+  #    group: root
+  #    mode: '0644'
+  #- name: build container image
+  #  docker_image:
+  #    name: tomcatest:v1.0
+  #    build:
+  #      path: /root/tomcat-dockerfile
+  #      source: build
+  #    state: present
+
+#connection user possible improvement
+#parametrizar todo lo posible
