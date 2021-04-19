@@ -1,9 +1,9 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 LABEL maintainer="Jose Angel Morena Simon"
 #Add labels of OCP description etc. 
-ENV TZ=Europe/Madrid
-ENV HOME /code
-ENV USER 1001
+ENV TZ=Europe/Madrid \
+    HOME=/code \
+    USER=1001
 WORKDIR $HOME
 ADD https://ftp.cixug.es/apache/tomcat/tomcat-9/v9.0.45/bin/apache-tomcat-9.0.45.tar.gz .
 COPY start.sh .
