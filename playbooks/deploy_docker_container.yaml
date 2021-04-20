@@ -47,25 +47,16 @@
       exposed_ports:
         - "8080"
       ports:
-          - "8080:8080"
+        - "8080:8080"
 
   - name: Get infos on container
     docker_container_info:
       name: testtomcat
     register: container_status
+
   - name: Does container exist
     debug:
-      msg: "The container {{ ' testtomcat is running' if container_status.exists else 'testtomcat is not runnning' }}"
-
-  - name: Wait 20 seconds to verify tomcat container is exposed in port 8080
-    wait_for:
-      port: 8080
-      timeout: 20
-      sleep: 1
-      connect_timeout: 5
-      delay: 5
-      msg: "Timeout to verify if container in host {{ inventory_hostname }} is exposed at port 8080"
-    connection: local
+      msg: "The container {{ 'testtomcat is running' if container_status.exists else 'testtomcat is not runnning' }}"
 
   - name: Does container exist
     debug:
@@ -89,16 +80,6 @@
       permanent: true
       port: "8080/tcp"
     when: "'active' in firewalld_running"
-
-  - name: Wait 20 seconds to verify tomcat container is exposed in port 8080 from remote
-    wait_for:
-      port: 8080
-      timeout: 20
-      sleep: 1
-      connect_timeout: 5
-      delay: 5
-      msg: "Timeout to verify if container in host {{ inventory_hostname }} is exposed at port 8080"
-    delegate_to: localhost
 
 #connection user possible improvement
 #parametrizar todo lo posible
