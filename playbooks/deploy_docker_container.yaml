@@ -27,19 +27,27 @@
       mode: '0755'
   - name: copy test file
     copy:
-      src: "{{ project_path }}/tests_files/check_tests.py"
+      src: "{{ project_path }}/tests_files/{{ item }}"
       dest: /root/tomcat-deploy-files
       owner: root
       group: root
       mode: '0644'
     loop:
-      - "check_tests.py"
-      - "pytest.ini"
+      - "run_tests.py"
+      - "tests.py"
+
   - name: execute python script
+    #command: "python3 /root/tomcat-deploy-files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
     script: "{{ project_path }}/tests_files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
     register: pytest_execution
-  - debug: var=pytest_execution
+    args:
+      executable: python3
+    failed_when: no
+    changed_when: no
 
+  - name: set_fact of return code
+    set_fact:
+      pytest_return_code: "{{ pytest_execution.rc }}"
 
 
 - name: build and deploy container
@@ -97,6 +105,7 @@
   - name: Does container exist
     debug:
       msg: "The container testtomcat is locally exposed to port 8080, proceeding to open port if needed"
+  when: "pytest_return_code is not 0"
 
 - name: open firewall
   hosts: docker_server

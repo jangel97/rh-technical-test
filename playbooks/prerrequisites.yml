@@ -1,9 +1,0 @@
----
-- name: prerrequisites
-  hosts: all
-  tasks:
-    - name: install pytest
-      pip:
-        name: 
-        - pytest
-        executable: pip3
