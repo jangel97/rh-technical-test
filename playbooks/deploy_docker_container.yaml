@@ -1,7 +1,6 @@
 ---
-- name: build_and_deploy
-  gather_facts: no
-  hosts: all
+- name: meet dependencies
+  hosts: docker_server
   tasks:
   - name: install system dependencies
     dnf:
@@ -9,18 +8,55 @@
         - libselinux-python3
       state: latest
       #https://github.com/ansible/ansible/issues/67083   habria que ver en centos 7 el python3-dnf
+  - name: install pytest
+    pip:
+      name:
+        - pytest
+      executable: pip3
+
+- name: check if container is already running
+  hosts: docker_server
+  vars_files: "{{ project_path }}/vars/vars.yml"
+  tasks:
   - name: create build directory
     file: 
-      path: /root/tomcat-dockerfile
+      path: /root/tomcat-deploy-files
       state: directory
       owner: root
       group: root
       mode: '0755'
+  - name: copy test file
+    copy:
+      src: "{{ project_path }}/tests_files/check_tests.py"
+      dest: /root/tomcat-deploy-files
+      owner: root
+      group: root
+      mode: '0644'
+    loop:
+      - "check_tests.py"
+      - "pytest.ini"
+  - name: execute python script
+    script: "{{ project_path }}/tests_files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
+    register: pytest_execution
+  - debug: var=pytest_execution
 
+
+
+- name: build and deploy container
+  hosts: docker_server
+  vars_files: "{{ project_path }}/vars/vars.yml"
+  tasks:
+  - name: create build directory
+    file: 
+      path: /root/tomcat-deploy-files
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
   - name: copy Dockerfile
     copy:
       src: "{{ project_path }}/docker_files/{{ item }}"
-      dest: /root/tomcat-dockerfile
+      dest: /root/tomcat-deploy-files
       owner: root
       group: root
       mode: '0644'
@@ -33,12 +69,12 @@
       name: tomcatest
       tag: v1
       build:
-        path: /root/tomcat-dockerfile
+        path: /root/tomcat-deploy-files
         pull: no
         nocache: yes
       source: build
 
-  - name: Create a data container
+  - name: Create container
     docker_container:
       name: testtomcat
       image: tomcatest:v1
@@ -49,7 +85,7 @@
       ports:
         - "8080:8080"
 
-  - name: Get infos on container
+  - name: Get container info
     docker_container_info:
       name: testtomcat
     register: container_status
@@ -62,6 +98,9 @@
     debug:
       msg: "The container testtomcat is locally exposed to port 8080, proceeding to open port if needed"
 
+- name: open firewall
+  hosts: docker_server
+  tasks:
   - name: check if firewalld is running
     command: "systemctl is-active firewalld"
     changed_when: no

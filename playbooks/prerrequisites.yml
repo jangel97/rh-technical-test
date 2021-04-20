@@ -6,5 +6,4 @@
       pip:
         name: 
         - pytest
-        - mock
         executable: pip3
