@@ -1,0 +1,10 @@
+---
+- name: prerrequisites
+  hosts: all
+  tasks:
+    - name: install pytest
+      pip:
+        name: 
+        - pytest
+        - mock
+        executable: pip3

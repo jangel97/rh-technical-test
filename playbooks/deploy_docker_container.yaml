@@ -8,7 +8,7 @@
       name: 
         - libselinux-python3
       state: latest
-      #https://github.com/ansible/ansible/issues/67083
+      #https://github.com/ansible/ansible/issues/67083   habria que ver en centos 7 el python3-dnf
   - name: create build directory
     file: 
       path: /root/tomcat-dockerfile
@@ -19,7 +19,7 @@
 
   - name: copy Dockerfile
     copy:
-      src: "{{ project_path }}/files/{{ item }}"
+      src: "{{ project_path }}/docker_files/{{ item }}"
       dest: /root/tomcat-dockerfile
       owner: root
       group: root
@@ -56,11 +56,11 @@
 
   - name: Does container exist
     debug:
-      msg: "The container {{ 'testtomcat is running' if container_status.exists else 'testtomcat is not runnning' }}"
+      msg: "The container testtomcat {{ 'is' if container_status.exists else 'is not' }} running"
 
   - name: Does container exist
     debug:
-      msg: "The container testtomcat is locally exposed to port 8080, proceeding to openport if needed"
+      msg: "The container testtomcat is locally exposed to port 8080, proceeding to open port if needed"
 
   - name: check if firewalld is running
     command: "systemctl is-active firewalld"
