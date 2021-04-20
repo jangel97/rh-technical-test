@@ -1,0 +1,6 @@
+---
+container_name: "testtomcat"
+http_scheme: "http" 
+host: "localhost"
+port: "8080"
+url_path: "sample"
