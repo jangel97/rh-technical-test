@@ -1,0 +1,12 @@
+---
+- name: test run docker container
+  hosts: all
+  tasks:
+  - name: Create a data container
+    docker_container:
+      name: mydata
+      image: tomcatest:v1
+      exposed_ports:
+        - "8080"
+      ports:
+        - "8080:8080"

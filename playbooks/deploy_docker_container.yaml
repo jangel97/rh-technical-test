@@ -8,27 +8,98 @@
       name: 
         - libselinux-python3
       state: latest
-  #- name: create build directory
-  #  file: 
-  #    path: /root/tomcat-dockerfile
-  #    state: directory
-  #    owner: root
-  #    group: root
-  #    mode: '0755'
-  #- name: copy Dockerfile
-  #  copy:
-  #    src: "{{ project_path }}/files/Dockerfile"
-  #    dest: /root/tomcat-dockerfile
-  #    owner: root
-  #    group: root
-  #    mode: '0644'
-  #- name: build container image
-  #  docker_image:
-  #    name: tomcatest:v1.0
-  #    build:
-  #      path: /root/tomcat-dockerfile
-  #      source: build
-  #    state: present
+      #https://github.com/ansible/ansible/issues/67083
+  - name: create build directory
+    file: 
+      path: /root/tomcat-dockerfile
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: copy Dockerfile
+    copy:
+      src: "{{ project_path }}/files/{{ item }}"
+      dest: /root/tomcat-dockerfile
+      owner: root
+      group: root
+      mode: '0644'
+    loop:
+      - Dockerfile
+      - start.sh
+
+  - name: build container image
+    docker_image:
+      name: tomcatest
+      tag: v1
+      build:
+        path: /root/tomcat-dockerfile
+        pull: no
+        nocache: yes
+      source: build
+
+  - name: Create a data container
+    docker_container:
+      name: testtomcat
+      image: tomcatest:v1
+      detach: yes
+      cleanup: yes
+      exposed_ports:
+        - "8080"
+      ports:
+          - "8080:8080"
+
+  - name: Get infos on container
+    docker_container_info:
+      name: testtomcat
+    register: container_status
+  - name: Does container exist
+    debug:
+      msg: "The container {{ ' testtomcat is running' if container_status.exists else 'testtomcat is not runnning' }}"
+
+  - name: Wait 20 seconds to verify tomcat container is exposed in port 8080
+    wait_for:
+      port: 8080
+      timeout: 20
+      sleep: 1
+      connect_timeout: 5
+      delay: 5
+      msg: "Timeout to verify if container in host {{ inventory_hostname }} is exposed at port 8080"
+    connection: local
+
+  - name: Does container exist
+    debug:
+      msg: "The container testtomcat is locally exposed to port 8080, proceeding to openport if needed"
+
+  - name: check if firewalld is running
+    command: "systemctl is-active firewalld"
+    changed_when: no
+    failed_when: no
+    ignore_errors: yes
+    register: firewalld_running
+
+  - name: Is firewall running
+    debug:
+      msg: "Firewalld is {{ 'running' if 'active' in firewalld_running.stdout else 'not running' if 'active' not in firewalld_running.stdout }}"
+
+  - name: Open firewall port 8080
+    firewalld:
+      state: enabled
+      immediate: true
+      permanent: true
+      port: "8080/tcp"
+    when: "'active' in firewalld_running"
+
+  - name: Wait 20 seconds to verify tomcat container is exposed in port 8080 from remote
+    wait_for:
+      port: 8080
+      timeout: 20
+      sleep: 1
+      connect_timeout: 5
+      delay: 5
+      msg: "Timeout to verify if container in host {{ inventory_hostname }} is exposed at port 8080"
+    delegate_to: localhost
 
 #connection user possible improvement
 #parametrizar todo lo posible
+#controlar paquete python3-dnf en centos 7
