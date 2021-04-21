@@ -23,8 +23,3 @@
         pull: no
         nocache: yes
       source: build
-
-  - name: create build directory
-    file:
-      path: /root/tmp/tomcat-deploy-files
-      state: absent
