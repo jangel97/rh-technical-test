@@ -6,3 +6,8 @@ next steps
 - probar con diferentes entornos
 - hacer README.md y comentar el codigo
 - hacer README.md del role
+
+
+
+Possible improvements: 
+- firewalld

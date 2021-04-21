@@ -15,7 +15,7 @@
       mode: '0644'
 
   - name: build container image
-    docker_image:
+    community.docker.docker_image:
       name: "{{ image_name }}"
       tag: "{{ image_tag }}"
       build:
