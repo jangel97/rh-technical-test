@@ -1,0 +1,12 @@
+---
+#Testing /sample http endpoint vars section
+http_scheme: "http" 
+host: "localhost"
+port: "8080"
+url_path: "sample"
+
+tomcat_container_test_params:
+  http_scheme: "http"
+  host: "localhost"
+  port: "8080"
+  url_path: "sample"

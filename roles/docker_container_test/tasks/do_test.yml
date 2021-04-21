@@ -1,0 +1,8 @@
+---
+- name: execute pytest script
+  script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}"
+  register: pytest_execution
+  args:
+    executable: python3
+  failed_when: no
+  changed_when: no

@@ -11,3 +11,7 @@ next steps
 
 Possible improvements: 
 - firewalld
+
+
+prerrequisito:
+ansible-galaxy install -r requirements.yml

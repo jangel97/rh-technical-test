@@ -1,4 +1,4 @@
-import json, requests, pytest, docker, sys
+import requests, pytest, docker, sys
 
 PYTHON_SUPPORTED_VERSION = 3
 """
@@ -10,21 +10,14 @@ assert sys.version_info.major == PYTHON_SUPPORTED_VERSION
 Validate number of parameters
 """
 
-#NUMBER_OF_PARAMS = 7
-#assert len(sys.argv) == NUMBER_OF_PARAMS
+NUMBER_OF_PARAMS = 7
+assert len(sys.argv) == NUMBER_OF_PARAMS
 
-test_info = json.loads(sys.argv[2])
-print(test_info)
-container_name = test_info["container_name"]
-http_scheme = test_info["http_scheme"]
-host = test_info["host"]
-port = test_info["port"]
-url_path = test_info["url_path"]
-#container_name = sys.argv[2]
-#http_scheme = sys.argv[3]
-#host = sys.argv[4]
-#port = sys.argv[5]
-#url_path = sys.argv[6]
+container_name = sys.argv[2]
+http_scheme = sys.argv[3]
+host = sys.argv[4]
+port = sys.argv[5]
+url_path = sys.argv[6]
 
 @pytest.mark.parametrize("url",[(http_scheme+"://"+host+":"+port)])
 def test_connection_check(url):

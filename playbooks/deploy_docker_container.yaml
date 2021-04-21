@@ -1,5 +1,5 @@
 ---
-- name: Install dependencies
+- name: Install dependencies in servers
   hosts: docker_server
   tasks:
   - name: install system dependencies
@@ -8,10 +8,18 @@
         - libselinux-python3
       state: latest
       #https://github.com/ansible/ansible/issues/67083   habria que ver en centos 7 el python3-dnf
+  - name: install python3 dependencies
+    pip: 
+      name: 
+        - zipp
+        - docker
+      executable: pip3
 
 - name: check if container is already running
   hosts: docker_server
-  vars_files: "{{ project_path }}/vars/vars.yml"
+  vars_files: 
+    - "{{ project_path }}/vars/vars_docker.yml"
+    - "{{ project_path }}/vars/vars_pytest.yml"
   pre_tasks:
   - name: create build directory
     file: 
@@ -27,15 +35,19 @@
       owner: root
       group: root
       mode: '0644'
+  - debug:
+      msg: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ tomcat_container_test_params | to_json }}"
   - name: execute pytest script
-    script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
+    #script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
+    script: '{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py "{{ tomcat_container_test_params | to_json }}"' 
     register: pytest_execution
     args:
       executable: python3
     failed_when: no
     changed_when: no
+  - debug: var=pytest_execution
   - debug:
-      msg: "Role docker_container_builder_deployer will {{ 'not' if pytest_execution.rc==0 }} be executed"
+      msg: "The role docker_container_builder_deployer {{ 'will not be executed' if pytest_execution.rc==0 else 'will be executed' }}"
   roles:
     - role: docker_container_builder_deployer 
       when: "pytest_execution.rc != 0"
@@ -50,5 +62,5 @@
           failed_when: no
           changed_when: no
         - debug:
-            msg: "Container was {{ 'not ' if pytest_execution_2.rc != 0 }}successfuly deployed"
+            msg: "Container {{ container_name }} was {{ 'unsuccessfully' if pytest_execution_2.rc != 0 else 'successfully' }} deployed"
       when: "pytest_execution.rc != 0"
