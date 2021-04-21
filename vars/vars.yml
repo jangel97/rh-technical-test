@@ -5,6 +5,7 @@ image_name: "testtomcat"
 image_tag: "v1"
 container_port: "8080"
 host_map_port: "8080"
+
 #Testing /sample http endpoint vars section
 http_scheme: "http" 
 host: "localhost"

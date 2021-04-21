@@ -8,134 +8,36 @@
         - libselinux-python3
       state: latest
       #https://github.com/ansible/ansible/issues/67083   habria que ver en centos 7 el python3-dnf
-  - name: install pytest
-    pip:
-      name:
-        - pytest
-      executable: pip3
 
 - name: check if container is already running
   hosts: docker_server
   vars_files: "{{ project_path }}/vars/vars.yml"
-  tasks:
+  pre_tasks:
   - name: create build directory
     file: 
-      path: /root/tmp/tomcat-deploy-files
+      path: /root/tmp/tomcat-tests-files
       state: directory
       owner: root
       group: root
       mode: '0755'
   - name: copy test file
     copy:
-      src: "{{ project_path }}/tests_files/{{ item }}"
-      dest: /root/tmp/tomcat-deploy-files
+      src: "{{ project_path }}/files/tests.py"
+      dest: /root/tmp/tomcat-tests-files
       owner: root
       group: root
       mode: '0644'
-    loop:
-      - "run_tests.py"
-      - "tests.py"
-
   - name: execute python script
-    script: "{{ project_path }}/tests_files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
+    script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
     register: pytest_execution
     args:
       executable: python3
     failed_when: no
     changed_when: no
-
-  - name: set_fact of return code
-    set_fact:
-      pytest_return_code: "{{ pytest_execution.rc }}"
-
-  - debug: var=pytest_return_code
-
-- name: build and deploy container
-  hosts: docker_server
-  vars_files: "{{ project_path }}/vars/vars.yml"
-  tasks:
-  - name: build and deploy container in docker server
-    block:
-    - debug: var=pytest_return_code
-    - name: create build directory
-      file: 
-        path: /root/tmp/tomcat-deploy-files
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
-    - name: copy Dockerfile
-      copy:
-        src: "{{ project_path }}/docker_files/{{ item }}"
-        dest: /root/tmp/tomcat-deploy-files
-        owner: root
-        group: root
-        mode: '0644'
-      loop:
-        - Dockerfile
-        - entrypoint.sh
-
-    - name: build container image
-      docker_image:
-        name: "{{ image_name }}"
-        tag: "{{ image_tag }}"
-        build:
-          path: /root/tmp/tomcat-deploy-files
-          pull: no
-          nocache: yes
-        source: build
-
-    - name: Create container
-      docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image_name }}:{{ image_tag }}"
-        detach: yes
-        cleanup: yes
-        exposed_ports:
-          - "{{ container_port }}"
-        ports:
-          - "{{ host_map_port }}:{{ container_port }}"
-
-    - name: Get container info
-      docker_container_info:
-        name: "{{ container_name }}"
-      register: container_status
-
-    - name: Does container exist
-      debug:
-        msg: "The container testtomcat {{ 'is' if container_status.exists else 'is not' }} running"
-
-    - name: Does container exist
-      debug:
-        msg: "The container {{ container_name }} is locally exposed to port {{ container_port }}, proceeding to open port if needed"
-    - name: set_fact of container existing
-      set_fact:
-        container_is_running: "{{ container_status.exists }}"
-
-    when: "pytest_return_code != '0'"
-
-- name: open firewall
-  hosts: docker_server
-  tasks:
-  - name: check if firewalld is running
-    command: "systemctl is-active firewalld"
-    changed_when: no
-    failed_when: no
-    ignore_errors: yes
-    register: firewalld_running
-
-  - name: Is firewall running
-    debug:
-      msg: "Firewalld is {{ 'running' if 'active' in firewalld_running.stdout else 'not running' if 'active' not in firewalld_running.stdout }}"
-
-  - name: Open firewall port 8080
-    firewalld:
-      state: enabled
-      immediate: true
-      permanent: true
-      port: "8080/tcp"
-    when: "'active' in firewalld_running"
-
-#connection user possible improvement
-#parametrizar todo lo posible
-#controlar paquete python3-dnf en centos 7
+  - set_fact:
+      pytest_rc: "{{ pytest_execution.rc }}"
+  - debug:
+      msg: "Role docker will {{ 'not' if '0' in pytest_rc }} be executed"
+  roles:
+    - role: docker 
+      when: "pytest_rc != '0'"

@@ -1,0 +1,6 @@
+---
+- name: build tomcat sample container image
+  include_tasks: "build_container_image.yml"
+
+- name: run tomcat sample container image
+  include_tasks: "run_container_image.yml"
