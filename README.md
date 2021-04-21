@@ -11,11 +11,11 @@ next steps
 
 posibles mejoras:
 - firewalld
-<<<<<<< HEAD
-- si detecta el cambio en el dockerfile hacer cambio
-=======
 - si el fichero Dockerfile ha cambiado levantar el nuevo container y tirar abajo el viejo, sujeto a convencion numerica para el nombre
+- usuario con grupo docker para poder conectarse y levantar el container sin root
+- parametrizar lista de tests, en vez de un unico test ejecutado por el role de test
+ 
 
 prerrequisito:
 ansible-galaxy install -r requirements.yml
->>>>>>> generic_test_module
+ansible docker_host -m ping #debe funcionar
