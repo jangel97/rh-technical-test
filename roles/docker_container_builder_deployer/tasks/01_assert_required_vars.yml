@@ -1,0 +1,11 @@
+---
+- name: assert required vars
+  assert:
+    that: "{{ item }} is defined"
+  loop:
+    - "container_name"
+    - "image_name"
+    - "container_port"
+    - "host_map_port"
+  loop_control:
+    label: "Evaluating variable {{ item }}"

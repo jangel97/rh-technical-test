@@ -8,7 +8,7 @@
       mode: '0755'
   - name: copy Dockerfile
     copy:
-      src: "files/Dockerfile"
+      src: "files/{{ dockerfile_name }}"
       dest: /root/tmp/tomcat-deploy-files
       owner: root
       group: root
@@ -17,9 +17,11 @@
   - name: build container image
     community.docker.docker_image:
       name: "{{ image_name }}"
-      tag: "{{ image_tag }}"
+      tag: "{{ image_tag | default('latest') }}"
       build:
-        path: /root/tmp/tomcat-deploy-files
+        path: "/root/tmp/tomcat-deploy-files"
+        dockerfile: "{{ dockerfile_name }}"
         pull: no
         nocache: yes
+        args: "{{ docker_image_args }}"
       source: build

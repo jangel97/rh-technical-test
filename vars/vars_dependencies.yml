@@ -1,0 +1,6 @@
+---
+python3_dependencies:
+  - zipp
+  - docker 
+dnf_dependencies:
+  - libselinux-python3

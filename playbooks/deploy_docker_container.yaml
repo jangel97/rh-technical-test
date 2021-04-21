@@ -1,17 +1,16 @@
 ---
 - name: Install dependencies in servers
   hosts: docker_server
+  vars_files:
+    - "{{ project_path }}/vars/vars_dependencies.yml"
   tasks:
   - name: install system dependencies
     dnf:
-      name: 
-        - libselinux-python3
+      name: "{{ dnf_dependencies }}"
       state: latest
   - name: install python3 dependencies
     pip: 
-      name: 
-        - zipp
-        - docker
+      name: "{{ python3_dependencies }}"
       executable: pip3
 
 - name: check if container is already running
@@ -19,14 +18,15 @@
   vars_files: 
     - "{{ project_path }}/vars/vars_pytest.yml"
     - "{{ project_path }}/vars/vars_tomcat_docker_container.yml"
-  pre_tasks: #check vars, ensure everything is okay so the roles can run
   roles:
     - role: docker_container_test
       vars: 
         container_test_params: "{{ tomcat_container_test_params }}"
         script_test_name: "{{ tomcat_script_test_name }}"
-    - role: docker_container_builder_deployer 
+    - role: docker_container_builder_deployer #poner opciones adicionales asi como logging, etc. 
       vars:
+        dockerfile_name: "{{ tomcat_dockerfile_name }}"
+        docker_image_args: "{{ tomcat_docker_image_args }}"
         container_name: "{{ tomcat_container_name }}"
         image_name: "{{ tomcat_container_image_name }}"
         image_tag: "{{ tomcat_container_image_tag }}"
@@ -41,3 +41,4 @@
   post_tasks:
     - debug: 
         msg: "Container {{ container_name }} is {{ 'up and running' if pytest_execution.rc==0 else 'down' }}"
+      failed_when: "pytest_execution.rc==1"

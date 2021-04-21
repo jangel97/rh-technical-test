@@ -1,6 +1,9 @@
 ---
+- name: assert required vars
+  include_tasks: "01_assert_required_vars.yml"
+
 - name: build tomcat sample container image
-  include_tasks: "build_container_image.yml"
+  include_tasks: "02_build_container_image.yml"
 
 - name: run tomcat sample container image
-  include_tasks: "run_container_image.yml"
+  include_tasks: "03_run_container_image.yml"

@@ -1,0 +1,13 @@
+---
+- name: Create container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image_name }}:{{ image_tag | default('latest') }}"
+    detach: "{{ container_run_detach }}"
+    cleanup: "{{ container_cleanup }}"
+    container_default_behavior: "{{ container_default_behaviour }}"
+    exposed_ports:
+      - "{{ container_port }}"
+    ports:
+      - "{{ host_map_port }}:{{ container_port }}"
+    env: "{{ tomcat_container_env  | default({}) }}"

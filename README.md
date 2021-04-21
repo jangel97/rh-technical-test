@@ -1,8 +1,7 @@
 next steps
 
-- assert params al principio y los que no sean obligatorios pues... defaults
 - parametriza el dockerfile con ARG
-- param everything
+- assert en el wrap del test
 - probar con diferentes entornos
 - hacer README.md y comentar el codigo
 - hacer README.md del role
@@ -19,3 +18,7 @@ posibles mejoras:
 prerrequisito:
 ansible-galaxy install -r requirements.yml
 ansible docker_host -m ping #debe funcionar
+
+comentarios:
+el docker se trata del docker de toda la vida con el socket, se podria haber usado podman... 
+
