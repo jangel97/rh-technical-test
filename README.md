@@ -11,3 +11,4 @@ next steps
 
 Possible improvements: 
 - firewalld
+- si detecta el cambio en el dockerfile hacer cambio
