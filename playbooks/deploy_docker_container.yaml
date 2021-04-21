@@ -20,7 +20,7 @@
   tasks:
   - name: create build directory
     file: 
-      path: /root/tomcat-deploy-files
+      path: /root/tmp/tomcat-deploy-files
       state: directory
       owner: root
       group: root
@@ -28,7 +28,7 @@
   - name: copy test file
     copy:
       src: "{{ project_path }}/tests_files/{{ item }}"
-      dest: /root/tomcat-deploy-files
+      dest: /root/tmp/tomcat-deploy-files
       owner: root
       group: root
       mode: '0644'
@@ -37,7 +37,6 @@
       - "tests.py"
 
   - name: execute python script
-    #command: "python3 /root/tomcat-deploy-files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
     script: "{{ project_path }}/tests_files/run_tests.py /root/tomcat-deploy-files/check_tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
     register: pytest_execution
     args:
@@ -49,63 +48,71 @@
     set_fact:
       pytest_return_code: "{{ pytest_execution.rc }}"
 
+  - debug: var=pytest_return_code
 
 - name: build and deploy container
   hosts: docker_server
   vars_files: "{{ project_path }}/vars/vars.yml"
   tasks:
-  - name: create build directory
-    file: 
-      path: /root/tomcat-deploy-files
-      state: directory
-      owner: root
-      group: root
-      mode: '0755'
-  - name: copy Dockerfile
-    copy:
-      src: "{{ project_path }}/docker_files/{{ item }}"
-      dest: /root/tomcat-deploy-files
-      owner: root
-      group: root
-      mode: '0644'
-    loop:
-      - Dockerfile
-      - start.sh
+  - name: build and deploy container in docker server
+    block:
+    - debug: var=pytest_return_code
+    - name: create build directory
+      file: 
+        path: /root/tmp/tomcat-deploy-files
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+    - name: copy Dockerfile
+      copy:
+        src: "{{ project_path }}/docker_files/{{ item }}"
+        dest: /root/tmp/tomcat-deploy-files
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - Dockerfile
+        - entrypoint.sh
 
-  - name: build container image
-    docker_image:
-      name: tomcatest
-      tag: v1
-      build:
-        path: /root/tomcat-deploy-files
-        pull: no
-        nocache: yes
-      source: build
+    - name: build container image
+      docker_image:
+        name: "{{ image_name }}"
+        tag: "{{ image_tag }}"
+        build:
+          path: /root/tmp/tomcat-deploy-files
+          pull: no
+          nocache: yes
+        source: build
 
-  - name: Create container
-    docker_container:
-      name: testtomcat
-      image: tomcatest:v1
-      detach: yes
-      cleanup: yes
-      exposed_ports:
-        - "8080"
-      ports:
-        - "8080:8080"
+    - name: Create container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_name }}:{{ image_tag }}"
+        detach: yes
+        cleanup: yes
+        exposed_ports:
+          - "{{ container_port }}"
+        ports:
+          - "{{ host_map_port }}:{{ container_port }}"
 
-  - name: Get container info
-    docker_container_info:
-      name: testtomcat
-    register: container_status
+    - name: Get container info
+      docker_container_info:
+        name: "{{ container_name }}"
+      register: container_status
 
-  - name: Does container exist
-    debug:
-      msg: "The container testtomcat {{ 'is' if container_status.exists else 'is not' }} running"
+    - name: Does container exist
+      debug:
+        msg: "The container testtomcat {{ 'is' if container_status.exists else 'is not' }} running"
 
-  - name: Does container exist
-    debug:
-      msg: "The container testtomcat is locally exposed to port 8080, proceeding to open port if needed"
-  when: "pytest_return_code is not 0"
+    - name: Does container exist
+      debug:
+        msg: "The container {{ container_name }} is locally exposed to port {{ container_port }}, proceeding to open port if needed"
+    - name: set_fact of container existing
+      set_fact:
+        container_is_running: "{{ container_status.exists }}"
+
+    when: "pytest_return_code != '0'"
 
 - name: open firewall
   hosts: docker_server
