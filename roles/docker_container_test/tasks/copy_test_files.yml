@@ -1,0 +1,15 @@
+---  
+- name: create tests directory
+  file:
+    path: /root/tmp/tomcat-tests-files
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+- name: copy test file
+  copy:
+    src: "files/{{ script_test_name }}"
+    dest: /root/tmp/tomcat-tests-files
+    owner: root
+    group: root
+    mode: '0644'

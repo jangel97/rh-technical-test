@@ -1,0 +1,7 @@
+---
+# tasks file for docker_container_test
+- name: copy test files
+  include_tasks: "copy_test_files.yml"
+
+- name: execute tests
+  include_tasks: "do_test.yml"
