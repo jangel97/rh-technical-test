@@ -7,7 +7,6 @@
       name: 
         - libselinux-python3
       state: latest
-      #https://github.com/ansible/ansible/issues/67083   habria que ver en centos 7 el python3-dnf
   - name: install python3 dependencies
     pip: 
       name: 
@@ -18,49 +17,27 @@
 - name: check if container is already running
   hosts: docker_server
   vars_files: 
-    - "{{ project_path }}/vars/vars_docker.yml"
     - "{{ project_path }}/vars/vars_pytest.yml"
-  pre_tasks:
-  - name: create build directory
-    file: 
-      path: /root/tmp/tomcat-tests-files
-      state: directory
-      owner: root
-      group: root
-      mode: '0755'
-  - name: copy test file
-    copy:
-      src: "{{ project_path }}/files/tests.py"
-      dest: /root/tmp/tomcat-tests-files
-      owner: root
-      group: root
-      mode: '0644'
-  - debug:
-      msg: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ tomcat_container_test_params | to_json }}"
-  - name: execute pytest script
-    #script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
-    script: '{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py "{{ tomcat_container_test_params | to_json }}"' 
-    register: pytest_execution
-    args:
-      executable: python3
-    failed_when: no
-    changed_when: no
-  - debug: var=pytest_execution
-  - debug:
-      msg: "The role docker_container_builder_deployer {{ 'will not be executed' if pytest_execution.rc==0 else 'will be executed' }}"
+    - "{{ project_path }}/vars/vars_tomcat_docker_container.yml"
+  pre_tasks: #check vars, ensure everything is okay so the roles can run
   roles:
+    - role: docker_container_test
+      vars: 
+        container_test_params: "{{ tomcat_container_test_params }}"
+        script_test_name: "{{ tomcat_script_test_name }}"
     - role: docker_container_builder_deployer 
-      when: "pytest_execution.rc != 0"
+      vars:
+        container_name: "{{ tomcat_container_name }}"
+        image_name: "{{ tomcat_container_image_name }}"
+        image_tag: "{{ tomcat_container_image_tag }}"
+        container_port: "{{ tomcat_container_port }}"
+        host_map_port: "{{ tomcat_container_host_map_port }}"
+      when: "pytest_execution.rc == 1" 
+    - role: docker_container_test
+      vars: 
+        container_test_params: "{{ tomcat_container_test_params }}"
+        script_test_name: "{{ tomcat_script_test_name }}"
+      when: "pytest_execution.rc == 1" 
   post_tasks:
-    - name: "open port {{ host_map_port }} if needed"
-      block:
-        - name: execute pytest script
-          script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}" 
-          register: pytest_execution_2
-          args:
-            executable: python3
-          failed_when: no
-          changed_when: no
-        - debug:
-            msg: "Container {{ container_name }} was {{ 'unsuccessfully' if pytest_execution_2.rc != 0 else 'successfully' }} deployed"
-      when: "pytest_execution.rc != 0"
+    - debug: 
+        msg: "Container {{ container_name }} is {{ 'up and running' if pytest_execution.rc==0 else 'down' }}"

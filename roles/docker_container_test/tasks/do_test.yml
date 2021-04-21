@@ -1,8 +1,17 @@
 ---
 - name: execute pytest script
-  script: "{{ project_path }}/files/run_tests.py /root/tmp/tomcat-tests-files/tests.py {{ container_name }} {{ http_scheme }} {{ host }} {{ port }} {{ url_path }}"
+  script: "files/wrap_tests.py /root/tmp/tomcat-tests-files/{{ script_test_name }} '{{ container_test_params | to_json }}'"
   register: pytest_execution
   args:
     executable: python3
   failed_when: no
   changed_when: no
+
+- debug: var=pytest_execution
+- name: display return code
+  debug:
+    msg:
+      - "Return code 0: All tests passed"
+      - "Return code 1: Some tests failed"
+      - "Return code 2: Test crashed"
+      - "Return code is {{ pytest_execution.rc }}"

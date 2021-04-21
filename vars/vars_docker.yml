@@ -1,8 +1,0 @@
----
-#Container vars section
-container_name: "testtomcat"
-image_name: "testtomcat"
-image_tag: "v1"
-container_port: "8080"
-host_map_port: "8080"
-#
