@@ -65,9 +65,6 @@ Project Structure
 ```bash
 .
 ├── ansible.cfg
-├── facts/
-│   ├── 10.10.10.43
-│   └── 127.0.0.1
 ├── inventories/
 │   └── docker_server/
 │       ├── group_vars/
