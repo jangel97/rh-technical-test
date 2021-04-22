@@ -1,12 +1,23 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
-LABEL maintainer="Jose Angel Morena Simon"
+
+ENV SUMMARY = "Example container ubi8-minimal tomcat application"
+LABEL maintainer="Jose Angel Morena Simon" \
+      name="rhscl/httpd-24-rhel7" \
+      summary="$SUMMARY" \
+      description="$SUMMARY" \
+      io.k8s.description="$SUMMARY" \
+      io.k8s.display-name="Tomcat ubi8-minimal" \
+      io.openshift.expose-services="8080:http" \
+      io.openshift.tags="tomcat"
+
 ENV TZ=Europe/Madrid
 ENV HOME /code
 ARG USER=1001
 ARG PORT=8080
 WORKDIR $HOME
 ADD https://ftp.cixug.es/apache/tomcat/tomcat-9/v9.0.45/bin/apache-tomcat-9.0.45.tar.gz .
-RUN         microdnf update && \ 
+RUN         set -x && \
+	    microdnf update && \ 
 	    microdnf --nodocs install -y java-1.8.0-openjdk-devel tar gzip && \
     	    microdnf reinstall tzdata --setopt=tsflags=nodocs -y && \
             microdnf clean all && \
@@ -17,5 +28,11 @@ RUN         microdnf update && \
 	    chmod -R g=u $HOME
 EXPOSE $PORT
 USER $USER
+USER 1001
 ENTRYPOINT [ "/bin/bash", "./apache-tomcat-9.0.45/bin/catalina.sh"]
 CMD ["run"]
+
+#Bug ubi-minimal tzdata timezone
+#https://bugzilla.redhat.com/show_bug.cgi?id=1668185
+#https://bugzilla.redhat.com/show_bug.cgi?id=1674495
+#https://bugzilla.redhat.com/show_bug.cgi?id=1903219

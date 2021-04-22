@@ -12,9 +12,8 @@
   - name: "Override Python Interpeter for CentOS7"
     set_fact:
       my_interpreter: "/usr/bin/python"
-    when:
-    - "ansible_distribution == 'CentOS'"
-    - "ansible_distribution_major_version | int == 7"
+    when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
+          (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")
     #https://github.com/ansible/ansible/issues/67083
 
   - name: install system dependencies
@@ -30,8 +29,9 @@
       name: "{{ python3_dependencies }}"
       executable: pip3
 
-- name: Validate if container is already running, otherwise deploy container and validate it was successfully deployed
+- name: Validate if container is running. Otherwise deploy container and validate again
   hosts: docker_server
+  serial: 1
   vars_files: 
     - "{{ project_path }}/vars/vars_pytest.yml"
     - "{{ project_path }}/vars/vars_tomcat_docker_container.yml"
@@ -49,13 +49,13 @@
         image_tag: "{{ tomcat_container_image_tag }}"
         container_port: "{{ tomcat_container_port }}"
         host_map_port: "{{ tomcat_container_host_map_port }}"
-      when: "pytest_execution.rc == 1" 
+      when: "pytest_result == '1'" 
     - role: docker_container_test
       vars: 
         container_test_params: "{{ tomcat_container_test_params }}"
         script_test_name: "{{ tomcat_script_test_name }}"
-      when: "pytest_execution.rc == 1" 
+      when: "pytest_result == '1'" 
   post_tasks:
     - debug: 
-        msg: "{% if pytest_execution.rc==0 %}Container is up and running{% elif pytest_execution.rc==1 %}Container is down{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
-      failed_when: "pytest_execution.rc!=0"
+        msg: "{% if pytest_result=='0' %}Container is up and running{% elif pytest_result=='1' %}Container is down{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
+      failed_when: "pytest_result!='0'"

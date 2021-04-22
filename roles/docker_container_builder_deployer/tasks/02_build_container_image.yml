@@ -13,7 +13,13 @@
       owner: "{{ ansible_user | default('root') }}"
       group: "{{ ansible_user | default('root') }}"
       mode: '0644'
-
+    register: dockerfile
+  - name: remove image if Dockerfile changed
+    community.docker.docker_image:
+      name: "{{ image_name }}"
+      tag: "{{ image_tag }}"
+      state: absent
+    when: dockerfile.changed
   - name: build container image
     community.docker.docker_image:
       name: "{{ image_name }}"

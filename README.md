@@ -1,10 +1,14 @@
 next steps
 
+
+
 2)- probar con otro entorno nuevo
 1)- cada role maneje sus dependencias vitales con vars.yml
 - hacer README.md y comentar el codigo
 - hacer README.md del role
 
+unix:///var/run/docker.sock
+dockerd
 
 
 posibles mejoras:

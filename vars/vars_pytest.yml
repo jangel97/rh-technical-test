@@ -1,9 +1,9 @@
 ---
 #Testing /sample http endpoint vars section
-tomcat_script_test_name: test_my_tomcat_container.py
+tomcat_script_test_name: test_my_tomcat_docker_container.py
 tomcat_container_test_params:
   http_scheme: "http"
   host: "localhost"
   port: "8080"
   url_path: "sample"
-  container_name: "testtomcat"
+  container_name: "mytomcat"

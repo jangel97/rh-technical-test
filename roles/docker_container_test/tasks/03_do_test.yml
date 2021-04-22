@@ -19,3 +19,6 @@
       - "{% if pytest_execution.rc==0 %}All tests passed successfully. Container is up and running{% elif pytest_execution.rc==1 %}Some test failed{% else %}Test crashed, checkout the test parameters{% endif %}"
   failed_when: "pytest_execution.rc==2"
 
+- name: "Return value of pytest result"
+  set_fact:
+    pytest_result: "{{ pytest_execution.rc }}"
