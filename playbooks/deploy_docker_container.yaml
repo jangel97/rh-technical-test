@@ -9,7 +9,7 @@
     set_fact:
       my_interpreter: "{{ ansible_python_interpreter }}"
 
-  - name: "Override Python Interpeter for CentOS7"
+  - name: "Override temporarily Python Interpeter for CentOS7 or RHEL7"
     set_fact:
       my_interpreter: "/usr/bin/python"
     when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
@@ -31,10 +31,13 @@
 
 - name: Validate if container is running. Otherwise deploy container and validate again
   hosts: docker_server
-  serial: 1
+  serial: "{{ playbook_serial | default(0)}}"
   vars_files: 
     - "{{ project_path }}/vars/vars_pytest.yml"
     - "{{ project_path }}/vars/vars_tomcat_docker_container.yml"
+  pre_tasks:
+    - debug: 
+        msg: "Starting to test container"  
   roles:
     - role: docker_container_test
       vars: 
@@ -57,5 +60,5 @@
       when: "pytest_result == '1'" 
   post_tasks:
     - debug: 
-        msg: "{% if pytest_result=='0' %}Container is up and running{% elif pytest_result=='1' %}Container is down{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
+        msg: "{% if pytest_result=='0' %}Container {{ tomcat_container_name }} is up and running in host {{ inventory_hostname }}{% elif pytest_result=='1' %}Container {{ tomcat_container_name }} is down in host {{ inventory_hostname }}{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
       failed_when: "pytest_result!='0'"

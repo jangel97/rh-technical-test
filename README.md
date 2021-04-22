@@ -1,8 +1,6 @@
 next steps
 
 
-
-2)- probar con otro entorno nuevo
 1)- cada role maneje sus dependencias vitales con vars.yml
 - hacer README.md y comentar el codigo
 - hacer README.md del role
@@ -16,6 +14,9 @@ posibles mejoras:
 - si el fichero Dockerfile ha cambiado levantar el nuevo container y tirar abajo el viejo, sujeto a convencion numerica para el nombre
 - parametrizar lista de tests, en vez de un unico test ejecutado por el role de test
  
+
+ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
+
 
 prerrequisito:
 ansible-galaxy install -r requirements.yml

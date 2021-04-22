@@ -2,13 +2,12 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
 ENV SUMMARY = "Example container ubi8-minimal tomcat application"
 LABEL maintainer="Jose Angel Morena Simon" \
-      name="rhscl/httpd-24-rhel7" \
       summary="$SUMMARY" \
       description="$SUMMARY" \
       io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Tomcat ubi8-minimal" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="tomcat"
+      io.openshift.tags="minimal RHEL 8 tomcat"
 
 ENV TZ=Europe/Madrid
 ENV HOME /code
@@ -18,17 +17,18 @@ WORKDIR $HOME
 ADD https://ftp.cixug.es/apache/tomcat/tomcat-9/v9.0.45/bin/apache-tomcat-9.0.45.tar.gz .
 RUN         set -x && \
 	    microdnf update && \ 
-	    microdnf --nodocs install -y java-1.8.0-openjdk-devel tar gzip && \
+	    microdnf --nodocs install -y java-1.8.0-openjdk tar gzip && \
     	    microdnf reinstall tzdata --setopt=tsflags=nodocs -y && \
             microdnf clean all && \
 	    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
 	    tar xvf apache-tomcat-9.0.45.tar.gz && \
+            rm -f apache-tomcat-9.0.45.tar.gz && \
+	    microdnf remove tar -y && \
             curl -L -o apache-tomcat-9.0.45/webapps/sample.war https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war && \
 	    chgrp -R 0 $HOME && \
 	    chmod -R g=u $HOME
 EXPOSE $PORT
 USER $USER
-USER 1001
 ENTRYPOINT [ "/bin/bash", "./apache-tomcat-9.0.45/bin/catalina.sh"]
 CMD ["run"]
 

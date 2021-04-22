@@ -1,0 +1,4 @@
+- name: install python3 dependencies
+  pip:
+    name: "{{ python_dependencies }}"
+    executable: pip3
