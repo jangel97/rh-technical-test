@@ -63,48 +63,91 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Project Structure
 ----------------
 .
+
 ├── ansible.cfg
+
 ├── facts/
+
 │   ├── 10.10.10.43
+
 │   └── 127.0.0.1
+
 ├── inventories/
+
 │   └── docker_server/
+
 │       ├── group_vars/
+
 │       │   └── all
+
 │       └── host
+
 ├── playbooks/
+
 │   └── deploy_docker_container.yaml
+
 ├── README.md
+
 ├── requirements.yml
+
 ├── roles/
+
 │   ├── docker_container_builder_deployer/
+
 │   │   ├── defaults/
+
 │   │   │   └── main.yml
+
 │   │   ├── files/
+
 │   │   │   └── Dockerfile.tomcat.ubi8-minimal
+
 │   │   ├── README.md
+
 │   │   └── tasks/
+
 │   │       ├── 00_assert_required_vars.yml
+
 │   │       ├── 01_build_container_image.yml
+
 │   │       ├── 02_run_container_image.yml
+
 │   │       └── main.yml
+
 │   └── docker_container_test/
+
 │       ├── files/
+
 │       │   ├── test_my_tomcat_docker_container.py
+
 │       │   └── wrap_tests.py
+
 │       ├── README.md
+
 │       ├── tasks/
+
 │       │   ├── 00_assert_required_vars.yml
+
 │       │   ├── 01_install_dependencies.yml
+
 │       │   ├── 02_copy_test_files.yml
+
 │       │   ├── 03_do_test.yml
+
 │       │   └── main.yml
+
 │       └── vars/
+
 │           └── main.yml
+
 └── vars/
+
     ├── vars_dependencies.yml
+
     ├── vars_pytest.yml
+
     └── vars_tomcat_docker_container.yml
+
 
 
 How to run it:
