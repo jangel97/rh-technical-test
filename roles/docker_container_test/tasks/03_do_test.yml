@@ -1,4 +1,7 @@
 ---
+#This tasks execute the wrap_tests.py python3 script, which will invoke the pytest script. The tests receive the parameters via the variable 'container_test_params'. 
+#If pytest script crashes, the role will fail.
+#At the end the role will set a fact 'pytest_result' to indicate the results of the tests ran
 - name: execute pytest script
   script: "files/wrap_tests.py /root/tmp/tomcat-tests-files/{{ script_test_name }} '{{ container_test_params | to_json }}'"
   register: pytest_execution

@@ -1,4 +1,5 @@
 ---
+#This task ensures all the required variables to run the role are defined
 - name: assert required vars
   assert:
     that: "{{ item }} is defined"

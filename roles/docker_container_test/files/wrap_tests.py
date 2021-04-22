@@ -1,11 +1,18 @@
 #!/usr/bin/python3
+"""
+The purpose of this python script is to start the pytest script.
+This script will receive a json parameter. The script will validate that the json is parseable
+Once the pytest script ends, this script will set the return code depending on the execution of the pytest script.
+Return code will be:
+    - 0 if all tests ran successfully
+    - 1 if any test failed
+    - 2 if pytest script crashed
+"""
 import pytest
 import sys
 import json
 import logging
 from collections import defaultdict
-
-
 
 logger=logging.getLogger('TEST_WRAPPER')
 logger.setLevel(logging.INFO)
@@ -15,13 +22,6 @@ formatter = logging.Formatter('%(levelname)s: %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-"""
-
-posible mejora hacer checks 
-posible mejora soportar pila de tests en vez de 1
-
-
-"""
 
 def main():
     """
