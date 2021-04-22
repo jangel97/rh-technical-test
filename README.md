@@ -24,8 +24,9 @@ ansible-galaxy install -r requirements.yml
 ansible docker_host -m ping #debe funcionar
 
 si es CentOS para que el pull funcione contra el registry hay que lanzar el siguiente comando:
-
 $ openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443 </dev/null 2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
+
+
 
 https://github.com/CentOS/sig-atomic-buildscripts/issues/329
 

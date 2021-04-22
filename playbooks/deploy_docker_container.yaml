@@ -38,6 +38,8 @@
   pre_tasks:
     - debug: 
         msg: "Starting to test container"  
+      run_once: True
+      delegate_to: localhost
   roles:
     - role: docker_container_test
       vars: 

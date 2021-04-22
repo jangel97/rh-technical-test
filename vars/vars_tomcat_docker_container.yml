@@ -1,5 +1,5 @@
 ---
-#Container vars section
+#Docker container tomcat vars
 tomcat_dockerfile_name: "Dockerfile.tomcat.ubi8-minimal"
 tomcat_docker_image_args:
   PORT: 8080  #default value is 8080

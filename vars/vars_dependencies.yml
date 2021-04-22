@@ -1,4 +1,5 @@
 ---
+#dependencies to install by the playbook
 python3_dependencies:
   - zipp
   - docker 
