@@ -32,6 +32,7 @@ USER $USER
 ENTRYPOINT [ "/bin/bash", "./apache-tomcat-9.0.45/bin/catalina.sh"]
 CMD ["run"]
 
+#Dockerfile to build
 #Bug ubi-minimal tzdata timezone
 #https://bugzilla.redhat.com/show_bug.cgi?id=1668185
 #https://bugzilla.redhat.com/show_bug.cgi?id=1674495

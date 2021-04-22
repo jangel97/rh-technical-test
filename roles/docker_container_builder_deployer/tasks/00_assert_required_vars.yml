@@ -1,4 +1,5 @@
 ---
+#The aim of this task is to check whether if required variables to run the role have been defined
 - name: assert required vars
   assert:
     that: "{{ item }} is defined"

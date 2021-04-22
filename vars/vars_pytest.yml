@@ -1,10 +1,10 @@
 ---
 #Variables to execute test
-tomcat_script_test_name: test_my_tomcat_docker_container.py
-tomcat_container_test_params:
-  http_scheme: "http"
-  host: "localhost"
-  port: "8080"
-  url_path: "sample"
-  container_name: "mytomcat"
-  docker_socket_path: "unix://var/run/docker.sock"
+tomcat_script_test_name: test_my_tomcat_docker_container.py #pytest script to run
+tomcat_container_test_params: #parameters for the pytest script
+  http_scheme: "http" #protocol for the tomcat container
+  host: "localhost" #host to use curl to check if there is connectivity 
+  port: "8080" #port to use curl to check if there is connectivity
+  url_path: "sample" #url path to check HTTP status code
+  container_name: "mytomcat" #name of container, to check if it is running
+  docker_socket_path: "unix://var/run/docker.sock" #docker socket to connect to 

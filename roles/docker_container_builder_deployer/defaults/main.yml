@@ -1,6 +1,6 @@
 ---
 # defaults file for docker
-
+# default values for variables
 container_run_detach: "yes"
 container_cleanup: "yes"
 container_default_behaviour: "no_defaults"
