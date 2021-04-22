@@ -13,7 +13,7 @@
       name: "{{ python3_dependencies }}"
       executable: pip3
 
-- name: check if container is already running
+- name: Validate if container is already running, otherwise deploy container and validate it was successfully deployed
   hosts: docker_server
   vars_files: 
     - "{{ project_path }}/vars/vars_pytest.yml"
@@ -40,5 +40,5 @@
       when: "pytest_execution.rc == 1" 
   post_tasks:
     - debug: 
-        msg: "Container {{ container_name }} is {{ 'up and running' if pytest_execution.rc==0 else 'down' }}"
-      failed_when: "pytest_execution.rc==1"
+        msg: "{% if pytest_execution.rc==0 %}Container is up and running{% elif pytest_execution.rc==1 %}Container is down{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
+      failed_when: "pytest_execution.rc!=0"

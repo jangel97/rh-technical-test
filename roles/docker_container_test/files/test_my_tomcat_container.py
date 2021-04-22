@@ -9,21 +9,38 @@ assert sys.version_info.major == PYTHON_SUPPORTED_VERSION
 """
 Validate number of parameters
 """
-
 NUMBER_OF_PARAMS = 3
 assert len(sys.argv) == NUMBER_OF_PARAMS
 
+"""
+Validate json is fine
+"""
 try:
   test_info = json.loads(sys.argv[2])
 except:
     sys.exit(2)
 
+
+"""
+Validate if dictionary has required keys
+"""
+
+assert "container_name" in test_info
+assert "http_scheme" in test_info
+assert "host" in test_info
+assert "port" in test_info
+assert "url_path" in test_info
 container_name = test_info["container_name"]
 http_scheme = test_info["http_scheme"]
 host = test_info["host"]
 port = test_info["port"]
 url_path = test_info["url_path"]
 
+
+
+"""
+Pytest tests
+"""
 @pytest.mark.parametrize("url",[(http_scheme+"://"+host+":"+port)])
 def test_connection_check(url):
     connection_error = False

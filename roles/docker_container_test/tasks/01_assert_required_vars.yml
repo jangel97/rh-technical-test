@@ -2,8 +2,10 @@
 - name: assert required vars
   assert:
     that: "{{ item }} is defined"
+    quiet: true
+    fail_msg: "Variable '{{ item }}' must be defined"
   loop:
     - "script_test_name"
     - "container_test_params"
   loop_control:
-    label: "Evaluating variable {{ item }}"
+    label: "Checking if variable '{{ item }}' if defined"
