@@ -30,6 +30,7 @@ assert "http_scheme" in test_info
 assert "host" in test_info
 assert "port" in test_info
 assert "url_path" in test_info
+assert "docker_socket_path" in test_info
 
 """
 Get keys from dict object
@@ -39,16 +40,17 @@ http_scheme = test_info["http_scheme"]
 host = test_info["host"]
 port = test_info["port"]
 url_path = test_info["url_path"]
-
+docker_socket_path = test_info["docker_socket_path"]
 
 
 """
-Pytest tests
+Pytest test 1
 """
 @pytest.mark.parametrize("url",[(http_scheme+"://"+host+":"+port)])
 def test_connection_check(url):
     """
     Check connection with specific host and port
+    :param url: endpoint to validate
     """
     connection_error = False
     timeout_error = False
@@ -64,6 +66,9 @@ def test_connection_check(url):
     assert timeout_error != True
 
 
+"""
+Pytest test 2
+"""
 @pytest.mark.parametrize("tomcat_url",[(http_scheme+"://"+host+":"+port+"/"+url_path)])
 def test_status_code_check(tomcat_url):
     """
@@ -73,12 +78,17 @@ def test_status_code_check(tomcat_url):
     response = requests.get(tomcat_url)
     assert response.status_code == 200
 
+
+"""
+Pytest test 3
+"""
 @pytest.mark.parametrize("container_name",[(container_name)])
 def test_container_running_check(container_name):
     """
-    verify the status of a sniffer container by it's name
+    Verify the status of container by it's name
     :param container_name: the name of the container
     """
-    DOCKER_CLIENT = docker.DockerClient(base_url='unix://var/run/docker.sock')
+    #DOCKER_CLIENT = docker.DockerClient(base_url='unix://var/run/docker.sock')
+    DOCKER_CLIENT = docker.DockerClient(base_url=docker_socket_path)
     container = DOCKER_CLIENT.containers.get(container_name)
     assert container.status == "running"

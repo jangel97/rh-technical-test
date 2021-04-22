@@ -7,3 +7,4 @@ tomcat_container_test_params:
   port: "8080"
   url_path: "sample"
   container_name: "mytomcat"
+  docker_socket_path: "unix://var/run/docker.sock"
