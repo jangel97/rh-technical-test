@@ -1,13 +1,30 @@
 ---
 - name: Install dependencies in servers
   hosts: docker_server
+  gather_facts: yes
   vars_files:
     - "{{ project_path }}/vars/vars_dependencies.yml"
   tasks:
+  - name: "Define Python Interpreter"
+    set_fact:
+      my_interpreter: "{{ ansible_python_interpreter }}"
+
+  - name: "Override Python Interpeter for CentOS7"
+    set_fact:
+      my_interpreter: "/usr/bin/python"
+    when:
+    - "ansible_distribution == 'CentOS'"
+    - "ansible_distribution_major_version | int == 7"
+    #https://github.com/ansible/ansible/issues/67083
+
   - name: install system dependencies
-    dnf:
-      name: "{{ dnf_dependencies }}"
+    package:
+      name: "{{ system_dependencies }}"
       state: latest
+    become: true
+    vars:
+      ansible_python_interpreter: "{{ my_interpreter }}"
+      
   - name: install python3 dependencies
     pip: 
       name: "{{ python3_dependencies }}"

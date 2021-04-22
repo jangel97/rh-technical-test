@@ -6,6 +6,7 @@
     executable: python3
   failed_when: no
   changed_when: no
+  become: yes
 
 - debug: 
     var: pytest_execution

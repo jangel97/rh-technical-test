@@ -1,0 +1,7 @@
+---
+# Vars for the creation of ansible user
+user_name: "ansible"
+user_shell: "/bin/bash"
+user_generate_ssh_key: "yes"
+user_enable_passwordless_sudo: "True"
+path_to_public_key: "/root/.ssh/id_rsa.pub"

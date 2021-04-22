@@ -1,17 +1,17 @@
 ---
   - name: create build directory
     file:
-      path: /root/tmp/tomcat-deploy-files
+      path: ~/tmp/tomcat-deploy-files
       state: directory
-      owner: root
-      group: root
+      owner: "{{ ansible_user | default('root') }}"
+      group: "{{ ansible_user | default('root') }}"
       mode: '0755'
   - name: copy Dockerfile
     copy:
       src: "files/{{ dockerfile_name }}"
-      dest: /root/tmp/tomcat-deploy-files
-      owner: root
-      group: root
+      dest: ~/tmp/tomcat-deploy-files
+      owner: "{{ ansible_user | default('root') }}"
+      group: "{{ ansible_user | default('root') }}"
       mode: '0644'
 
   - name: build container image
@@ -19,9 +19,10 @@
       name: "{{ image_name }}"
       tag: "{{ image_tag | default('latest') }}"
       build:
-        path: "/root/tmp/tomcat-deploy-files"
+        path: "~/tmp/tomcat-deploy-files"
         dockerfile: "{{ dockerfile_name }}"
         pull: no
         nocache: yes
         args: "{{ docker_image_args }}"
       source: build
+    become: yes

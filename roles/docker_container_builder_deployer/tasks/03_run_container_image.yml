@@ -11,3 +11,4 @@
     ports:
       - "{{ host_map_port }}:{{ container_port }}"
     env: "{{ tomcat_container_env  | default({}) }}"
+  become: yes
