@@ -2,3 +2,4 @@
 # vars file for docker_container_test
 python_dependencies:
   - docker
+  - requests

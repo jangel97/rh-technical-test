@@ -13,7 +13,7 @@ NUMBER_OF_PARAMS = 3
 assert len(sys.argv) == NUMBER_OF_PARAMS
 
 """
-Validate json is fine
+Convert json in dict object
 """
 try:
   test_info = json.loads(sys.argv[2])
@@ -30,6 +30,10 @@ assert "http_scheme" in test_info
 assert "host" in test_info
 assert "port" in test_info
 assert "url_path" in test_info
+
+"""
+Get keys from dict object
+"""
 container_name = test_info["container_name"]
 http_scheme = test_info["http_scheme"]
 host = test_info["host"]
@@ -43,6 +47,9 @@ Pytest tests
 """
 @pytest.mark.parametrize("url",[(http_scheme+"://"+host+":"+port)])
 def test_connection_check(url):
+    """
+    Check connection with specific host and port
+    """
     connection_error = False
     timeout_error = False
 
@@ -59,6 +66,10 @@ def test_connection_check(url):
 
 @pytest.mark.parametrize("tomcat_url",[(http_scheme+"://"+host+":"+port+"/"+url_path)])
 def test_status_code_check(tomcat_url):
+    """
+    Check status HTTP code of specific endpoint
+    :param tomcat_url: endpoint to validate
+    """
     response = requests.get(tomcat_url)
     assert response.status_code == 200
 
