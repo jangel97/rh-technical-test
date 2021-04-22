@@ -17,6 +17,7 @@ posibles mejoras:
 
 prerrequisito:
 ansible-galaxy install -r requirements.yml
+
 ansible docker_host -m ping #debe funcionar
 
 comentarios:

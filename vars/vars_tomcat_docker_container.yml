@@ -1,8 +1,9 @@
 ---
 #Container vars section
-tomcat_dockerfile_name: "Dockerfile.ubi8-minimal"
+tomcat_dockerfile_name: "Dockerfile.tomcat.ubi8-minimal"
 tomcat_docker_image_args:
-  listen_port: 8080
+  PORT: 8080  #default value is 8080
+  USER: 1002  #default valie is 1001
 tomcat_container_name: "testtomcat"
 tomcat_container_image_name: "testtomcat"
 tomcat_container_image_tag: "v1"
