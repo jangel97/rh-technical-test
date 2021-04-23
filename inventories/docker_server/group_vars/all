@@ -1,4 +1,4 @@
 ---
-project_path: "{{ playbook_dir }}/.."
+project_root: "{{ playbook_dir }}/.." #Never modify this variable
 ansible_python_interpreter: /usr/bin/python3
 #ansible_user: jmorena

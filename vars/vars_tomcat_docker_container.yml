@@ -1,13 +1,13 @@
 ---
 #Docker container tomcat vars
-tomcat_dockerfile_name: "Dockerfile.tomcat.ubi8-minimal"
-tomcat_docker_image_args:
+tomcat_dockerfile_name: "Dockerfile.tomcat.ubi8-minimal" #This variable sets the name of the Dockerfile file
+tomcat_docker_image_args: #This dictionary sets the args of the Docker build
   PORT: 8080  #default value is 8080
   USER: 1002  #default valie is 1001
-tomcat_container_name: "mytomcat"
-tomcat_container_image_name: "mytomcat"
-tomcat_container_image_tag: "dev"
-tomcat_container_port: "8080"
-tomcat_container_host_map_port: "8080"
-tomcat_container_env:
+tomcat_docker_image_name: "mytomcat"  #This variable sets the name of the docker image
+tomcat_docker_image_tag: "dev"  #This variable sets the tag of the docker image
+tomcat_docker_container_name: "mytomcat"  #This variable sets the name of the Docker container
+tomcat_docker_container_port: "8080"  #This variable sets the port of the Docker container
+tomcat_docker_container_host_map_port: "8080" #This variable sets the host's port to map the Tomcat docker application port
+tomcat_docker_container_env:  #This variable sets the environment of the tomcat Docker container
   MY_ENV: "example environment var"

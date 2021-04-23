@@ -6,7 +6,7 @@
   serial: 1
   gather_facts: yes
   vars_files:
-    - "{{ project_path }}/vars/vars_dependencies.yml"
+    - "{{ project_root }}/vars/vars_dependencies.yml"
   tasks:
   - name: "Define Python Interpreter"
     set_fact:
@@ -48,8 +48,8 @@
   hosts: docker_server
   serial: "{{ playbook_serial | default(0)}}" #Var to set the serial, by default 0
   vars_files: 
-    - "{{ project_path }}/vars/vars_pytest.yml" #In this file there are the variables for the pytest role to execute
-    - "{{ project_path }}/vars/vars_tomcat_docker_container.yml" #In this file there are the variables for the docker_container_builder_deployer to build and deploy the container
+    - "{{ project_root }}/vars/vars_pytest.yml" #In this file there are the variables for the pytest role to execute
+    - "{{ project_root }}/vars/vars_tomcat_docker_container.yml" #In this file there are the variables for the docker_container_builder_deployer to build and deploy the container
   pre_tasks:
     #Indicate start of the playbook actions
     - debug: 
@@ -67,11 +67,12 @@
       vars:
         dockerfile_name: "{{ tomcat_dockerfile_name }}" #name of the dockerfile file
         docker_image_args: "{{ tomcat_docker_image_args }}" #dictionary with ARGs to build the docker container image
-        image_name: "{{ tomcat_container_image_name }}" #name of the docker container image to build
-        image_tag: "{{ tomcat_container_image_tag }}" #tag of the docker container image to build 
-        container_name: "{{ tomcat_container_name }}" #name of the container to run
-        container_port: "{{ tomcat_container_port }}" #port of the docker container that will be exposed
-        host_map_port: "{{ tomcat_container_host_map_port }}" #port of the host to map the contaier port from which the tomcat server will be serving
+        image_name: "{{ tomcat_docker_image_name }}" #name of the docker container image to build
+        image_tag: "{{ tomcat_docker_image_tag }}" #tag of the docker container image to build 
+        container_name: "{{ tomcat_docker_container_name }}" #name of the container to run
+        container_port: "{{ tomcat_docker_container_port }}" #port of the docker container that will be exposed
+        host_map_port: "{{ tomcat_docker_container_host_map_port }}" #port of the host to map the contaier port from which the tomcat server will be serving
+        container_env: "{{ tomcat_docker_container_env }}" #environment of the docker container
       when: "pytest_result == '1'" #If at least one test failed the role will execute. Otherwise, it will not be run. In case the pytest script crashed the role will not be executed either. 
     - role: docker_container_test #Execute again pytest script to validate the contianer was successfully built and deployed.
       vars: 
@@ -81,5 +82,5 @@
   post_tasks:
     #Indicate result of the playbook actions. This task will fail if the tests did not pass (container not running) or the tests crashed
     - debug: 
-        msg: "{% if pytest_result=='0' %}Container {{ tomcat_container_name }} is up and running in host {{ inventory_hostname }}{% elif pytest_result=='1' %}Container {{ tomcat_container_name }} is down in host {{ inventory_hostname }}{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
+        msg: "{% if pytest_result=='0' %}Container {{ tomcat_docker_container_name }} is up and running in host {{ inventory_hostname }}{% elif pytest_result=='1' %}Container {{ tomcat_docker_container_name }} is down in host {{ inventory_hostname }}{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
       failed_when: "pytest_result!='0'"

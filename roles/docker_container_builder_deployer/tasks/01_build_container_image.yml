@@ -1,6 +1,6 @@
 ---
 #The aim of these tasks is to build the docker image. 
-#If the Docker container image already exists but the  
+#If the Docker container image already exists but the Dockerfile has been modified... The role will not remove the image to force its update for precaution reasons 
   - name: create build directory
     file:
       path: ~/tmp/tomcat-deploy-files
