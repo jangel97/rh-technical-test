@@ -129,7 +129,9 @@ Delivery files:
 ----------------
 **Dockerfile:**
 
-You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
+You will find the Dockerfile in the path: 
+`<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
+
 The Dockerfile is based on ubi8-minimal image.
 
 The package tzdata had to be reinstalled in the Dockerfile because of the following bug:
