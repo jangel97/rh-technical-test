@@ -22,7 +22,7 @@
         msg: 
         - "It is necessary to run the Yum module with python2 interpreter in RHEL7 and CentOS7, because python3-dnf cannot be installed in these systems"  
         - "As python3-dnf cannot be installed, the dnf module cant be used so the only way is using Yum"
-        - "Using yum is not supported with python3, for that we need dnf. Using dnf without python3-dnf it is not possible"
+        - "Using yum is not supported with python3, for that we need dnf. Using dnf Ansible module without python3-dnf is not possible"
         - "https://github.com/ansible/ansible/issues/67083"
     when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
           (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")

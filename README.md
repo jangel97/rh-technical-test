@@ -109,6 +109,7 @@ How to run it:
 ----------------
 
 	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
+
 	$ ansible-playbook playbooks/deploy_docker_container.yaml
 
 TODO Improvements:

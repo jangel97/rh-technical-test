@@ -82,13 +82,13 @@ def test_status_code_check(tomcat_url):
 """
 Pytest test 3
 """
-@pytest.mark.parametrize("container_name",[(container_name)])
-def test_container_running_check(container_name):
+@pytest.mark.parametrize("container_name,docker_socket_path",[(container_name,docker_socket_path)])
+def test_container_running_check(container_name,docker_socket_path):
     """
     Verify the status of container by it's name
     :param container_name: the name of the container
+    :param docker_socket_path: the docker socket path
     """
-    #DOCKER_CLIENT = docker.DockerClient(base_url='unix://var/run/docker.sock')
     DOCKER_CLIENT = docker.DockerClient(base_url=docker_socket_path)
     container = DOCKER_CLIENT.containers.get(container_name)
     assert container.status == "running"
