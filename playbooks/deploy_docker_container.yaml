@@ -91,7 +91,7 @@
     - role: docker_container_test #Execute pytest script. This role will create the fact 'pytest_result' so its value can be accessed externally
       vars: 
         script_test_name: "{{ tomcat_script_test_name }}" #pytest file to execute
-        container_test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found
+        test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found
     - role: docker_container_builder_deployer 
       vars:
         dockerfile_name: "{{ tomcat_dockerfile_name }}" #name of the dockerfile file

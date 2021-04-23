@@ -4,3 +4,4 @@
   pip:
     name: "{{ python_dependencies }}"
     executable: pip3
+  when: "python_dependencies is defined"

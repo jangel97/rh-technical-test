@@ -19,7 +19,7 @@ The role has been tested in Fedora 30, RHEL 7 and CentOS7. It does not support W
 Role Variables
 --------------
 - `script_test_name`: The name of the Pytest script to run. It is MANDATORY.
-- `test_params`: This variable is a dictionary which provides the different parameters that the Pytest script requires. The role converts it into a JSON object and passes it on to the wrapper script, which validates if it is parseable. If everything is okay the JSON object will be passed on to the Pytest script.
+- `test_params`: This variable is a dictionary which provides the different parameters that the Pytest script requires. The role converts it into a JSON object and passes it on to the wrapper script, which validates if it is parseable. If everything is okay the JSON object will be passed on to the Pytest script. This variable is OPTIONAL and by default its value is an empty dictionary.
 
 In the file `vars/main.yml` there are the following variables:
 - `python_dependencies`: This variable is a list with the different pip3 packages to install so the test to execute can run successfully.

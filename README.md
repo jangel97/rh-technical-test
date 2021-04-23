@@ -113,6 +113,8 @@ For more information: https://github.com/CentOS/sig-atomic-buildscripts/issues/3
 
 How to run it:
 =========
+You will find the inventory files in the path: `inventories/docker_host`. Specifically, in the file `inventories/docker_host/host` you can set the hosts that you want to manage with Ansible. 
+
 The playbook must always be ran from the root of the project.
 
 	$ ansible-playbook playbooks/deploy_docker_container.yaml

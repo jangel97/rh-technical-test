@@ -7,6 +7,6 @@
     fail_msg: "Variable '{{ item }}' must be defined"
   loop:
     - "script_test_name"
-    - "container_test_params"
+    - "test_params"
   loop_control:
     label: "Checking if variable '{{ item }}' is defined"
