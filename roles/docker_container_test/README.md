@@ -15,6 +15,7 @@ Requirements
 
 The role requires Python3 in the machine and Pytest installed. 
 The role has been tested in Fedora 30, RHEL 7 and CentOS7. It does not support Windows environments, Debian based distributions nor RHEL 8 nor CentOS 8.
+The role has been tested with Python 3.6.8 and Python 3.7.7
 
 Role Variables
 --------------

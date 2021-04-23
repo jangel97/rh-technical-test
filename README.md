@@ -218,3 +218,7 @@ Docker build and deploy role:
 - Parametrize logging configuration for Docker containers and may other settings
 
 Very likely there may be many other things to improve :)
+
+Author:
+----------------
+Jose Angel Morena
