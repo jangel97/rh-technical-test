@@ -115,10 +115,12 @@ How to run it:
 =========
 The playbook must always be ran from the root of the project.
 
-	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
-
-
 	$ ansible-playbook playbooks/deploy_docker_container.yaml
+
+Even you can use the variable `playbooks_serial` as an external parameter to control the playbook execution.
+
+	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
+	
 
 To make the Ansible playbook  works: 
 - The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
