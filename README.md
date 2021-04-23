@@ -39,52 +39,51 @@ Playbook Variables
 --------------
 The variables can be set in the following files:
 	Variable file:
-	- $PROJECT_ROOT/vars/vars_dependencies.yml
+	- **$PROJECT_ROOT/vars/vars_dependencies.yml**
 	In this file the variables specified are the following: 
 		- `python3_dependencies`:
-		This variable sets the list of pip3 dependencies to install
+		This variable sets the list of pip3 dependencies to install. It is OPTIONAL to specify it. 
 		- `system_dependencies`:
-		This variable sets the list of system dependencies to install
-
+		This variable sets the list of system dependencies to install. It is OPTIONAL to specify it.
 
 	Variable file:
-	- $PROJECT_ROOT/vars/vars_pytest.yml
+	- **$PROJECT_ROOT/vars/vars_pytest.yml**
 	In this file the variables specified are the following:
 		- `tomcat_script_test_name`:
-		This variable sets the name of the pytest script to be run
+		This variable sets the name of the pytest script to be run. It is MANDATORY to specify it. 
 		- `tomcat_container_test_params`:
-		This variable is the dictionary in which the required parameters for the pytest script will be specified. The idea of using a dictionary object is because depending on the test the parameters can be different.
+		This variable is the dictionary in which the required parameters for the pytest script will be specified. The idea of using a dictionary object is because depending on the test the parameters can be different. 
 	
 	Variable file:
-	- $PROJECT_ROOT/vars/vars_tomcat_docker_container.yml
+	- **$PROJECT_ROOT/vars/vars_tomcat_docker_container.yml**
 	In this file the variables specified are the following:
 		- `tomcat_dockerfile_name`:
-		This variable is the name of the Dockerfile file
+		This variable is the name of the Dockerfile file. It is MANDATORY to specify it.
 
 		- `tomcat_docker_image_name`:
-		This variable is the name of the image to build
+		This variable is the name of the image to build. It is MANDATORY to specify it.
 
 		- `tomcat_docker_image_tag`:
-		This variable is the tag of the image to build
+		This variable is the tag of the image to build. It is MANDATORY to specify it.
 
 		- `tomcat_docker_image_args`:
-		This variable is a dictionary which sets the differents ARG that will be passed on to the Docker build
+		This variable is a dictionary which sets the differents ARG that will be passed on to the Docker build. It is OPTIONAL to specify it.
 
 		- `tomcat_docker_container_name`:
-		This variable sets the name that will be used to run the Docker container 
+		This variable sets the name that will be used to run the Docker container. It is MANDATORY to specify it. 
 
 		- `tomcat_docker_container_port`:
-		This variable sets the port of the Tomcat application to run
+		This variable sets the port of the Tomcat application to run. It is MANDATORY to specify it.
 
 		- `tomcat_docker_container_host_map_port`:
-		This variable sets the host's port in which the container port Tomcat application will be mapped
+		This variable sets the host's port in which the container port Tomcat application will be mapped. It is MANDATORY to specify it.
 
 		- `tomcat_docker_container_env`:
-		This variable sets the environment variables that will be passed on to the container
+		This variable sets the environment variables that will be passed on to the container. It is OPTIONAL to specify it.
 
 	Group Variables file:
 	The following variable would specify variables hosts beloning to the group "all".
-	- inventories/docker_server/group_vars/all
+	- **inventories/docker_server/group_vars/all**
 		- `project_path`:
 		This variable must not be modified, it parameterizes the root of the project
 		- `ansible_python_interpreter`:
@@ -94,7 +93,7 @@ The variables can be set in the following files:
 
 	The playbook will also accept the following variables:
 		- `playbook_serial`: 
-		Ansible serial for the play in which the tasks to validate, build, run and validate again, will be run. 
+		Ansible serial for the play in which the tasks to validate, build, run and validate again, will be run. This variable is OPTIONAL. 
 
 Requirements and Dependencies
 =========
@@ -120,6 +119,12 @@ The playbook must always be ran from the root of the project.
 	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
 
 	$ ansible-playbook playbooks/deploy_docker_container.yaml
+
+To make the Ansible playbook  works: 
+- The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
+- The pytest script must be in the path `<project_root>/roles/docker_container_test/files`
+- The playbook must be in the path `<project_root>/playbooks`
+ 
 
 Project Structure
 ----------------
@@ -164,6 +169,12 @@ Project Structure
     ├── vars_pytest.yml
     └── vars_tomcat_docker_container.yml
 ```
+
+Special considerations:
+----------------
+
+
+
 
 
 

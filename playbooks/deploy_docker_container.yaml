@@ -1,4 +1,31 @@
 ---
+#This play asserts if required variables are required to run
+- name: assert required vars
+  hosts: docker_server
+  vars_files:
+    - "{{ project_root }}/vars/vars_dependencies.yml"
+    - "{{ project_root }}/vars/vars_pytest.yml"
+    - "{{ project_root }}/vars/vars_tomcat_docker_container.yml"
+  tasks:
+  - name: Check if required vars are defined
+    assert:
+      that: "{{ item }} is defined"
+      quiet: true
+      fail_msg: 
+      - "Variable '{{ item }}' must be defined for the playbook to run"
+      - "Check README.md where required variables are specified"
+    loop:
+    - "tomcat_dockerfile_name"
+    - "tomcat_docker_image_name"
+    - "tomcat_docker_image_tag"
+    - "tomcat_docker_container_name"
+    - "tomcat_docker_container_port"
+    - "tomcat_docker_container_host_map_port"
+    - "tomcat_script_test_name"
+    - "tomcat_container_test_params"
+    loop_control:
+      label: "Checking if variable '{{ item }}' is defined"
+
 #This play installs dependencies, it is run with serial 1 because it displays {{ ansible_distribution }}
 #It is completely idempotent
 - name: Install dependencies in servers
@@ -24,8 +51,8 @@
         - "As python3-dnf cannot be installed, the dnf module cant be used so the only way is using Yum"
         - "Using yum is not supported with python3, for that we need dnf. Using dnf Ansible module without python3-dnf is not possible"
         - "https://github.com/ansible/ansible/issues/67083"
-    when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
-          (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")
+    when: (system_dependencies is defined) and
+          ((ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")) 
 
   - name: install system dependencies
     package:
@@ -34,11 +61,13 @@
     become: true
     vars:
       ansible_python_interpreter: "{{ my_interpreter }}"
+    when: "system_dependencies is defined"
       
   - name: install python3 dependencies
     pip: 
       name: "{{ python3_dependencies }}"
       executable: pip3
+    when: "python3_dependencies is defined"
 
 #The following play performs the following steps:
 #1. Validate if the container is already running and check if it is possible to connect with it. The tomcat test and its params will be passed to the role
