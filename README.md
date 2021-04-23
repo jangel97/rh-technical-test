@@ -101,7 +101,7 @@ Before running the playbook one must meet the following requirements:
 The following command will install the Ansible dependencies for the Ansible playbook to run:
 	$ ansible-galaxy install -r requirements.yml
 
-The following command must run successfully:
+The following command must run successfully (run the command from the root path of the project):
 	$ ansible docker_host -m ping 
 
 If one of the Ansible managed nodes is CentOS 7, the following command must be executed in that host before running the playbook:
