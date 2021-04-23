@@ -8,6 +8,7 @@
       owner: "{{ ansible_env.USER }}"
       group: "{{ ansible_env.USER }}"
       mode: '0755'
+    become: yes
   - name: copy Dockerfile
     copy:
       src: "files/{{ dockerfile_name }}"
@@ -15,6 +16,7 @@
       owner: "{{ ansible_env.USER }}"
       group: "{{ ansible_env.USER }}"
       mode: '0644'
+    become: yes
   - name: build container image
     community.docker.docker_image:
       name: "{{ image_name }}"

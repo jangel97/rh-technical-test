@@ -116,5 +116,8 @@ TODO Improvements:
 Tests:
 - Support indicating to the wrap_tests.py more than one test to execute with the respective parameters for such test.
 
+Docker build and deploy role:
+- The docker_build_and_deploy role will not remove the docker image even if it detects the Dockerfile has changed. Even though it could be controlled I prefer the removal of Docker images to be manual and not performed by this automation mechanism.
+
 *) continuar comentando 
 *) README principal, readme roles

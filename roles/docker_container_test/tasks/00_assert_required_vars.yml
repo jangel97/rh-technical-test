@@ -9,4 +9,4 @@
     - "script_test_name"
     - "container_test_params"
   loop_control:
-    label: "Checking if variable '{{ item }}' if defined"
+    label: "Checking if variable '{{ item }}' is defined"
