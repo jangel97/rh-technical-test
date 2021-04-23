@@ -1,1 +1,4 @@
-logs/
+*.log
+facts/
+__pycache__
+ansible.log

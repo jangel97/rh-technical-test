@@ -1,0 +1,12 @@
+---
+#This task ensures all the required variables to run the role are defined
+- name: assert required vars
+  assert:
+    that: "{{ item }} is defined"
+    quiet: true
+    fail_msg: "Variable '{{ item }}' must be defined"
+  loop:
+    - "script_test_name"
+    - "test_params"
+  loop_control:
+    label: "Checking if variable '{{ item }}' is defined"

@@ -1,0 +1,14 @@
+---
+#The aim of this task is to check whether if required variables to run the role have been defined
+- name: assert required vars
+  assert:
+    that: "{{ item }} is defined"
+    quiet: true
+    fail_msg: "Variable '{{ item }}' must be defined"
+  loop:
+    - "container_name"
+    - "image_name"
+    - "container_port"
+    - "host_map_port"
+  loop_control:
+    label: "Checking if variable '{{ item }}' is defined"

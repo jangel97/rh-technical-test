@@ -1,0 +1,13 @@
+---
+# tasks file for docker_container_test
+- name: assert mandatory variables
+  include_tasks: "00_assert_required_vars.yml"
+
+- name: install dependencies to run module
+  include_tasks: "01_install_dependencies.yml"
+
+- name: copy test files
+  include_tasks: "02_copy_test_files.yml"
+
+- name: execute tests
+  include_tasks: "03_do_test.yml"

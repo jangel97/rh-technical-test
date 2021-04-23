@@ -1,0 +1,115 @@
+---
+#This play asserts if required variables are required to run
+- name: assert required vars
+  hosts: localhost
+  vars_files:
+    - "{{ project_root }}/vars/vars_dependencies.yml"
+    - "{{ project_root }}/vars/vars_pytest.yml"
+    - "{{ project_root }}/vars/vars_tomcat_docker_container.yml"
+  tasks:
+  - name: Check if required vars are defined
+    assert:
+      that: "{{ item }} is defined"
+      quiet: true
+      fail_msg: 
+      - "Variable '{{ item }}' must be defined for the playbook to run"
+      - "Check README.md where required variables are specified"
+    loop:
+    - "tomcat_dockerfile_name"
+    - "tomcat_docker_image_name"
+    - "tomcat_docker_image_tag"
+    - "tomcat_docker_container_name"
+    - "tomcat_docker_container_port"
+    - "tomcat_docker_container_host_map_port"
+    - "tomcat_script_test_name"
+    - "tomcat_container_test_params"
+    loop_control:
+      label: "Checking if variable '{{ item }}' is defined"
+
+#This play installs dependencies, it is run with serial 1 because it displays {{ ansible_distribution }}
+#It is completely idempotent
+- name: Install dependencies in servers
+  hosts: docker_server
+  serial: 1
+  gather_facts: yes
+  vars_files:
+    - "{{ project_root }}/vars/vars_dependencies.yml"
+  tasks:
+  - name: "Define Python Interpreter"
+    set_fact:
+      my_interpreter: "{{ ansible_python_interpreter }}"
+
+    #When the OS is RHEL 7 or CentOS 7 dnf module cannot be used because the dependency python3-dnf cannot be installed. As I am forced to use yum Ansible module and it requires Python2, the task to install dependencies will be run with python2. Only in this case, only this task
+  - name: "Override temporarily Python Interpeter for CentOS7 or RHEL7"
+    block:
+    - name: "Override temporarily Python Interpeter for {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      set_fact:
+        my_interpreter: "/usr/bin/python"
+    - debug: 
+        msg: 
+        - "It is necessary to run the Yum module with python2 interpreter in RHEL7 and CentOS7, because python3-dnf cannot be installed in these systems"  
+        - "As python3-dnf cannot be installed, the dnf module cant be used so the only way is using Yum"
+        - "Using yum is not supported with python3, for that we need dnf. Using dnf Ansible module without python3-dnf is not possible"
+        - "https://github.com/ansible/ansible/issues/67083"
+    when: (system_dependencies is defined) and
+          ((ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")) 
+
+  - name: install system dependencies
+    package:
+      name: "{{ system_dependencies }}"
+      state: latest
+    become: true
+    vars:
+      ansible_python_interpreter: "{{ my_interpreter }}"
+    when: "system_dependencies is defined"
+      
+  - name: install python3 dependencies
+    pip: 
+      name: "{{ python3_dependencies }}"
+      executable: pip3
+    when: "python3_dependencies is defined"
+
+#The following play performs the following steps:
+#1. Validate if the container is already running and check if it is possible to connect with it. The tomcat test and its params will be passed to the role
+#2. If the container is not running the role docker_container_builder_deployer will build and deploy the container. If the image already exists it will not be substitued.
+#3. Validate again if the container ran successfully. If not the last task of the playbook will fail indicating the reason why.
+- name: Validate if container is running. Otherwise deploy container and validate again
+  hosts: docker_server
+  serial: "{{ playbook_serial | default(0)}}" #Var to set the serial, by default 0
+  vars_files: 
+    - "{{ project_root }}/vars/vars_pytest.yml" #In this file there are the variables for the pytest role to execute
+    - "{{ project_root }}/vars/vars_tomcat_docker_container.yml" #In this file there are the variables for the docker_container_builder_deployer to build and deploy the container
+  pre_tasks:
+    #Indicate start of the playbook actions
+    - debug: 
+        msg: 
+        - "Starting to run the roles docker_container_test and docker_container_builder_test"  
+        - "Eventually the playbook will fail if the docker_container_builder_test role was not able to deploy the container successfully. In order to check this the role docker_container_test will be run again."  
+      run_once: True
+      delegate_to: localhost
+  roles:
+    - role: docker_container_test #Execute pytest script. This role will create the fact 'pytest_result' so its value can be accessed externally
+      vars: 
+        script_test_name: "{{ tomcat_script_test_name }}" #pytest file to execute
+        test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found
+    - role: docker_container_builder_deployer 
+      vars:
+        dockerfile_name: "{{ tomcat_dockerfile_name }}" #name of the dockerfile file
+        docker_image_args: "{{ tomcat_docker_image_args }}" #dictionary with ARGs to build the docker container image
+        image_name: "{{ tomcat_docker_image_name }}" #name of the docker container image to build
+        image_tag: "{{ tomcat_docker_image_tag }}" #tag of the docker container image to build 
+        container_name: "{{ tomcat_docker_container_name }}" #name of the container to run
+        container_port: "{{ tomcat_docker_container_port }}" #port of the docker container that will be exposed
+        host_map_port: "{{ tomcat_docker_container_host_map_port }}" #port of the host to map the contaier port from which the tomcat server will be serving
+        container_env: "{{ tomcat_docker_container_env }}" #environment of the docker container
+      when: "pytest_result == '1'" #If at least one test failed the role will execute. Otherwise, it will not be run. In case the pytest script crashed the role will not be executed either. 
+    - role: docker_container_test #Execute again pytest script to validate the contianer was successfully built and deployed.
+      vars: 
+        script_test_name: "{{ tomcat_script_test_name }}" #pytest file to execute
+        container_test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found
+      when: "pytest_result == '1'" #If at least one test failed the role will execute. Otherwise, it will not be run. In case the pytest script crashed the role will not be executed either. 
+  post_tasks:
+    #Indicate result of the playbook actions. This task will fail if the tests did not pass (container not running) or the tests crashed
+    - debug: 
+        msg: "{% if pytest_result=='0' %}Container {{ tomcat_docker_container_name }} is up and running in host {{ inventory_hostname }}{% elif pytest_result=='1' %}Container {{ tomcat_docker_container_name }} is down in host {{ inventory_hostname }}{% else %}Test crashed, checkout the params, unable to validate if container is running{% endif %}"
+      failed_when: "pytest_result!='0'"

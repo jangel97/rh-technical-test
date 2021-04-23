@@ -1,0 +1,27 @@
+---
+#This tasks execute the wrap_tests.py python3 script, which will invoke the pytest script. The tests receive the parameters via the variable 'container_test_params'. 
+#If pytest script crashes, the role will fail.
+#At the end the role will set a fact 'pytest_result' to indicate the results of the tests ran
+- name: execute pytest script
+  script: "files/wrap_tests.py /root/tmp/tomcat-tests-files/{{ script_test_name }} '{{ test_params | default({}) | to_json }}'"
+  register: pytest_execution
+  args:
+    executable: python3
+  failed_when: no
+  changed_when: no
+  become: yes
+
+- debug: 
+    var: pytest_execution
+    verbosity: 2
+
+- name: display return code
+  debug:
+    msg:
+      - "Return code is {{ pytest_execution.rc }}"
+      - "{% if pytest_execution.rc==0 %}All tests passed successfully. Container is up and running{% elif pytest_execution.rc==1 %}Some test failed{% else %}Test crashed, checkout the test parameters{% endif %}"
+  failed_when: "pytest_execution.rc==2"
+
+- name: "Return value of pytest result"
+  set_fact:
+    pytest_result: "{{ pytest_execution.rc }}"

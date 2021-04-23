@@ -1,0 +1,4 @@
+---
+#Collections to install before running the playbook
+collections: 
+- community.docker
