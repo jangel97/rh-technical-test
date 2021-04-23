@@ -176,7 +176,8 @@ Delivery files:
 
 You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
 The Dockerfile is based on ubi8-minimal image.
-The package tzdata had to be reinstalled in the Dockerfile because of the following bugs:
+
+The package tzdata had to be reinstalled in the Dockerfile because of the following bug:
 - https://bugzilla.redhat.com/show_bug.cgi?id=1668185
 - https://bugzilla.redhat.com/show_bug.cgi?id=1674495
 - https://bugzilla.redhat.com/show_bug.cgi?id=1903219
