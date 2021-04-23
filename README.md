@@ -38,8 +38,10 @@ It is important to highlight that the playbook does not work with CentOS 8 or RH
 Playbook Variables
 --------------
 The variables can be set in the following files:
+
 Variable file:
 - **$PROJECT_ROOT/vars/vars_dependencies.yml**
+
 In this file the variables specified are the following: 
 - `python3_dependencies`:
 This variable sets the list of pip3 dependencies to install. It is OPTIONAL to specify it. 
@@ -48,6 +50,7 @@ This variable sets the list of system dependencies to install. It is OPTIONAL to
 
 Variable file:
 - **$PROJECT_ROOT/vars/vars_pytest.yml**
+
 In this file the variables specified are the following:
 - `tomcat_script_test_name`:
 This variable sets the name of the pytest script to be run. It is MANDATORY to specify it. 
@@ -56,6 +59,7 @@ This variable is the dictionary in which the required parameters for the pytest 
 	
 Variable file:
 - **$PROJECT_ROOT/vars/vars_tomcat_docker_container.yml**
+
 In this file the variables specified are the following:
 - `tomcat_dockerfile_name`:
 This variable is the name of the Dockerfile file. It is MANDATORY to specify it.
@@ -67,28 +71,27 @@ This variable is the tag of the image to build. It is MANDATORY to specify it.
 This variable is a dictionary which sets the differents ARG that will be passed on to the Docker build. It is OPTIONAL to specify it.
 - `tomcat_docker_container_name`:
 This variable sets the name that will be used to run the Docker container. It is MANDATORY to specify it. 
-		- `tomcat_docker_container_port`:
-		This variable sets the port of the Tomcat application to run. It is MANDATORY to specify it.
+- `tomcat_docker_container_port`:
+This variable sets the port of the Tomcat application to run. It is MANDATORY to specify it.
+- `tomcat_docker_container_host_map_port`:
+This variable sets the host's port in which the container port Tomcat application will be mapped. It is MANDATORY to specify it.
+- `tomcat_docker_container_env`:
+This variable sets the environment variables that will be passed on to the container. It is OPTIONAL to specify it.
 
-		- `tomcat_docker_container_host_map_port`:
-		This variable sets the host's port in which the container port Tomcat application will be mapped. It is MANDATORY to specify it.
+Group Variables file:
+The following variable would specify variables hosts beloning to the group "all".
 
-		- `tomcat_docker_container_env`:
-		This variable sets the environment variables that will be passed on to the container. It is OPTIONAL to specify it.
+- **inventories/docker_server/group_vars/all**
+- `project_path`:
+This variable must not be modified, it parameterizes the root of the project
+- `ansible_python_interpreter`:
+This variable sets the python interpreter that Ansible will use. In my case I specified `/usr/bin/python3` 
+- `ansible_user`:
+The playbook supports connecting with a user diferent from root. Nevertheless this user must be sudoer. 
 
-	Group Variables file:
-	The following variable would specify variables hosts beloning to the group "all".
-	- **inventories/docker_server/group_vars/all**
-		- `project_path`:
-		This variable must not be modified, it parameterizes the root of the project
-		- `ansible_python_interpreter`:
-		This variable sets the python interpreter that Ansible will use. In my case I specified `/usr/bin/python3` 
-		- `ansible_user`:
-		The playbook supports connecting with a user diferent from root. Nevertheless this user must be sudoer. 
-
-	The playbook will also accept the following variables:
-		- `playbook_serial`: 
-		Ansible serial for the play in which the tasks to validate, build, run and validate again, will be run. This variable is OPTIONAL. 
+The playbook will also accept the following variables:
+- `playbook_serial`: 
+Ansible serial for the play in which the tasks to validate, build, run and validate again, will be run. This variable is OPTIONAL. 
 
 Requirements and Dependencies
 =========
@@ -165,12 +168,28 @@ Project Structure
     └── vars_tomcat_docker_container.yml
 ```
 
-Special considerations:
+Delivery files:
 ----------------
+**Dockerfile:**
+You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
+The Dockerfile is based on ubi8-minimal image.
+The package tzdata had to be reinstalled in the Dockerfile because of the following bugs:
+- https://bugzilla.redhat.com/show_bug.cgi?id=1668185
+- https://bugzilla.redhat.com/show_bug.cgi?id=1674495
+- https://bugzilla.redhat.com/show_bug.cgi?id=1903219
+It seems that the files /usr/share/zoneinfo were missing in the ubi8-minimal container image.
 
+**Pytest Scripts:**
+You will find the pytest script in the path: `<PROJECT_ROOT/roles/docker_container_test/files`
+The pytest script consists of two files:
+- wrap_tests.py: 
+This python script executes the pytest script. First it validates that the parameters are fine. Afterwards, it executes the pytest script and then collects the result. Depending on the result the script will return a return code.
 
+- test_my_tomcat_docker_container.py
+This is the pytest script. This script will always receive a parameter that is going to be a json object with the information the parameters the test needs to run, so this way it can be more generic.
 
-
+**Ansible Playbook:**
+You will find the playbook in the path: `<PROJECT_ROOT>/playbooks`
 
 
 TODO Improvements:
@@ -181,10 +200,10 @@ Tests:
 Docker build and deploy role:
 - The docker_build_and_deploy role will not remove the docker image even if it detects the Dockerfile has changed. Even though it could be controlled I prefer the removal of Docker images to be manual and not performed by this automation mechanism.
 
-- Support for Podman containers
+- Support for detecting and running Podman containers
 
 - Support for RHEL 8, CentOS 8, CentOS Stream, Debian based Linux distros
 
-- Parametrize logging configuration for Docker containers
+- Parametrize logging configuration for Docker containers and may other settings
 
 - Very likely there may be many other things to improve :)
