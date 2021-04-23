@@ -33,6 +33,7 @@ All of the roles have their own documentation which can be found in the folder o
 This playbook was tested with Ansible version Ansible 2.10.8 and Python version 3.6.8.
 
 The playbook has been tested with the following environments: Fedora 30, RHEL 7, CentOS 7. At this very moment the playbook does not support Debian based distributions neither Windows neither RHEL based distributions higher than 7. 
+
 It is important to highlight that the playbook does not work with CentOS 8 or RHEL 8 because the Docker package of this distribution is based on Podman containers. The playbook has been tested with docker-1.13.1 package in which there are no Podman containers, there is docker daemon and privileged socket "unix://var/run/docker.sock". Therefore, the playbook is not expected to work with rootless containers, athough it could be an interesting improvement.   
 
 Playbook Variables
@@ -98,14 +99,14 @@ Requirements and Dependencies
 Before running the playbook one must meet the following requirements:
 
 The following command will install the Ansible dependencies for the Ansible playbook to run:
-$ ansible-galaxy install -r requirements.yml
+	$ ansible-galaxy install -r requirements.yml
 
 The following command must run successfully:
-$ ansible docker_host -m ping 
+	$ ansible docker_host -m ping 
 
 If one of the Ansible managed nodes is CentOS 7, the following command must be executed in that host before running the playbook:
 
-$ openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443 </dev/null 2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
+	$ openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443 </dev/null 2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
 	
 This command is required in CentOS 7 so Docker can pull images from the public Red Hat registry. In my case, the base image of the Tomcat Docker container is ubi8-minimal so this step would be required.
 For more information: https://github.com/CentOS/sig-atomic-buildscripts/issues/329
@@ -116,11 +117,12 @@ The playbook must always be ran from the root of the project.
 
 	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
 
+
 	$ ansible-playbook playbooks/deploy_docker_container.yaml
 
 To make the Ansible playbook  works: 
 - The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
-- The pytest script must be in the path `<project_root>/roles/docker_container_test/files`
+- The Pytest script must be in the path `<project_root>/roles/docker_container_test/files`
 - The playbook must be in the path `<project_root>/playbooks`
  
 
@@ -171,15 +173,18 @@ Project Structure
 Delivery files:
 ----------------
 **Dockerfile:**
+
 You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
 The Dockerfile is based on ubi8-minimal image.
 The package tzdata had to be reinstalled in the Dockerfile because of the following bugs:
 - https://bugzilla.redhat.com/show_bug.cgi?id=1668185
 - https://bugzilla.redhat.com/show_bug.cgi?id=1674495
 - https://bugzilla.redhat.com/show_bug.cgi?id=1903219
+
 It seems that the files /usr/share/zoneinfo were missing in the ubi8-minimal container image.
 
 **Pytest Scripts:**
+
 You will find the pytest script in the path: `<PROJECT_ROOT/roles/docker_container_test/files`
 The pytest script consists of two files:
 - wrap_tests.py: 
@@ -189,6 +194,7 @@ This python script executes the pytest script. First it validates that the param
 This is the pytest script. This script will always receive a parameter that is going to be a json object with the information the parameters the test needs to run, so this way it can be more generic.
 
 **Ansible Playbook:**
+
 You will find the playbook in the path: `<PROJECT_ROOT>/playbooks`
 
 
@@ -206,4 +212,4 @@ Docker build and deploy role:
 
 - Parametrize logging configuration for Docker containers and may other settings
 
-- Very likely there may be many other things to improve :)
+Very likely there may be many other things to improve :)
