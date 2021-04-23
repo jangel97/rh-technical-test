@@ -26,7 +26,7 @@ The playbook supports using a non-root user, as long as this one is a sudoer. In
 
 In order to achieve this, two Ansible roles have been developed:
 - docker_container_builder_deployer. This role was developed to encapsulate the functionality of build and deploy Docker containers. It does only support Docker containers, not Podman, either Crio, or others.
-- docker_container_test. This role was developed to encapsulate the functionality of executing a pytest script to validate certain checks. The role will create a fact `pytest_result` with the return code of the execution of the pytest script.
+- pytest_tester. This role was developed to encapsulate the functionality of executing a pytest script to validate certain checks. The role will create a fact `pytest_result` with the return code of the execution of the pytest script.
 
 All of the roles have their own documentation which can be found in the folder of each role.
 
@@ -126,7 +126,7 @@ Even you can use the variable `playbooks_serial` as an external parameter to con
 
 To make the Ansible playbook work: 
 - The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
-- The Pytest script must be in the path `<project_root>/roles/docker_container_test/files`
+- The Pytest script must be in the path `<project_root>/roles/pytest_tester/files`
 - The playbook must be in the path `<project_root>/playbooks`
 
 Delivery files:
@@ -147,7 +147,7 @@ It seems that the files /usr/share/zoneinfo were missing in the ubi8-minimal con
 
 **Pytest Scripts:**
 
-You will find the pytest script in the path: `<PROJECT_ROOT/roles/docker_container_test/files`
+You will find the pytest script in the path: `<PROJECT_ROOT/roles/pytester_tester/files`
 The pytest script consists of two files:
 - wrap_tests.py: 
 This python script executes the pytest script. First it validates that the parameters are fine. Afterwards, it executes the pytest script and then collects the result. Depending on the result the script will return a return code.
@@ -184,7 +184,7 @@ Project Structure
 │   │       ├── 01_build_container_image.yml
 │   │       ├── 02_run_container_image.yml
 │   │       └── main.yml
-│   └── docker_container_test/
+│   └── pytest_tester/
 │       ├── files/
 │       │   ├── test_my_tomcat_docker_container.py
 │       │   └── wrap_tests.py

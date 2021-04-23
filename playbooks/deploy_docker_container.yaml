@@ -83,12 +83,12 @@
     #Indicate start of the playbook actions
     - debug: 
         msg: 
-        - "Starting to run the roles docker_container_test and docker_container_builder_test"  
-        - "Eventually the playbook will fail if the docker_container_builder_test role was not able to deploy the container successfully. In order to check this the role docker_container_test will be run again."  
+        - "Starting to run the roles pytest_tester and docker_container_builder_test"  
+        - "Eventually the playbook will fail if the docker_container_builder_test role was not able to deploy the container successfully. In order to check this the role pytest_tester will be run again."  
       run_once: True
       delegate_to: localhost
   roles:
-    - role: docker_container_test #Execute pytest script. This role will create the fact 'pytest_result' so its value can be accessed externally
+    - role: pytest_tester #Execute pytest script. This role will create the fact 'pytest_result' so its value can be accessed externally
       vars: 
         script_test_name: "{{ tomcat_script_test_name }}" #pytest file to execute
         test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found
@@ -103,7 +103,7 @@
         host_map_port: "{{ tomcat_docker_container_host_map_port }}" #port of the host to map the contaier port from which the tomcat server will be serving
         container_env: "{{ tomcat_docker_container_env }}" #environment of the docker container
       when: "pytest_result == '1'" #If at least one test failed the role will execute. Otherwise, it will not be run. In case the pytest script crashed the role will not be executed either. 
-    - role: docker_container_test #Execute again pytest script to validate the contianer was successfully built and deployed.
+    - role: pytest_tester #Execute again pytest script to validate the contianer was successfully built and deployed.
       vars: 
         script_test_name: "{{ tomcat_script_test_name }}" #pytest file to execute
         container_test_params: "{{ tomcat_container_test_params }}" #dictionary in which required parameters will be found

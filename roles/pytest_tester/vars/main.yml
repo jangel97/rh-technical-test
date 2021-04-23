@@ -1,5 +1,5 @@
 ---
-# vars file for docker_container_test
+# vars file for pytest_tester
 # python3 dependencies to install
 python_dependencies:
   - docker

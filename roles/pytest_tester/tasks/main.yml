@@ -1,5 +1,5 @@
 ---
-# tasks file for docker_container_test
+# tasks file for pytest_tester
 - name: assert mandatory variables
   include_tasks: "00_assert_required_vars.yml"
 
