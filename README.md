@@ -122,7 +122,7 @@ Even you can use the variable `playbooks_serial` as an external parameter to con
 	$ ansible-playbook playbooks/deploy_docker_container.yaml -e playbook_serial=1
 	
 
-To make the Ansible playbook  works: 
+To make the Ansible playbook work: 
 - The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
 - The Pytest script must be in the path `<project_root>/roles/docker_container_test/files`
 - The playbook must be in the path `<project_root>/playbooks`
