@@ -38,40 +38,35 @@ It is important to highlight that the playbook does not work with CentOS 8 or RH
 Playbook Variables
 --------------
 The variables can be set in the following files:
-	Variable file:
-	- **$PROJECT_ROOT/vars/vars_dependencies.yml**
-	In this file the variables specified are the following: 
-		- `python3_dependencies`:
-		This variable sets the list of pip3 dependencies to install. It is OPTIONAL to specify it. 
-		- `system_dependencies`:
-		This variable sets the list of system dependencies to install. It is OPTIONAL to specify it.
+Variable file:
+- **$PROJECT_ROOT/vars/vars_dependencies.yml**
+In this file the variables specified are the following: 
+- `python3_dependencies`:
+This variable sets the list of pip3 dependencies to install. It is OPTIONAL to specify it. 
+- `system_dependencies`:
+This variable sets the list of system dependencies to install. It is OPTIONAL to specify it.
 
-	Variable file:
-	- **$PROJECT_ROOT/vars/vars_pytest.yml**
-	In this file the variables specified are the following:
-		- `tomcat_script_test_name`:
-		This variable sets the name of the pytest script to be run. It is MANDATORY to specify it. 
-		- `tomcat_container_test_params`:
-		This variable is the dictionary in which the required parameters for the pytest script will be specified. The idea of using a dictionary object is because depending on the test the parameters can be different. 
+Variable file:
+- **$PROJECT_ROOT/vars/vars_pytest.yml**
+In this file the variables specified are the following:
+- `tomcat_script_test_name`:
+This variable sets the name of the pytest script to be run. It is MANDATORY to specify it. 
+- `tomcat_container_test_params`:
+This variable is the dictionary in which the required parameters for the pytest script will be specified. The idea of using a dictionary object is because depending on the test the parameters can be different. 
 	
-	Variable file:
-	- **$PROJECT_ROOT/vars/vars_tomcat_docker_container.yml**
-	In this file the variables specified are the following:
-		- `tomcat_dockerfile_name`:
-		This variable is the name of the Dockerfile file. It is MANDATORY to specify it.
-
-		- `tomcat_docker_image_name`:
-		This variable is the name of the image to build. It is MANDATORY to specify it.
-
-		- `tomcat_docker_image_tag`:
-		This variable is the tag of the image to build. It is MANDATORY to specify it.
-
-		- `tomcat_docker_image_args`:
-		This variable is a dictionary which sets the differents ARG that will be passed on to the Docker build. It is OPTIONAL to specify it.
-
-		- `tomcat_docker_container_name`:
-		This variable sets the name that will be used to run the Docker container. It is MANDATORY to specify it. 
-
+Variable file:
+- **$PROJECT_ROOT/vars/vars_tomcat_docker_container.yml**
+In this file the variables specified are the following:
+- `tomcat_dockerfile_name`:
+This variable is the name of the Dockerfile file. It is MANDATORY to specify it.
+- `tomcat_docker_image_name`:
+This variable is the name of the image to build. It is MANDATORY to specify it.
+- `tomcat_docker_image_tag`:
+This variable is the tag of the image to build. It is MANDATORY to specify it.
+- `tomcat_docker_image_args`:
+This variable is a dictionary which sets the differents ARG that will be passed on to the Docker build. It is OPTIONAL to specify it.
+- `tomcat_docker_container_name`:
+This variable sets the name that will be used to run the Docker container. It is MANDATORY to specify it. 
 		- `tomcat_docker_container_port`:
 		This variable sets the port of the Tomcat application to run. It is MANDATORY to specify it.
 
@@ -99,18 +94,18 @@ Requirements and Dependencies
 =========
 Before running the playbook one must meet the following requirements:
 
-	The following command will install the Ansible dependencies for the Ansible playbook to run:
-	$ ansible-galaxy install -r requirements.yml
+The following command will install the Ansible dependencies for the Ansible playbook to run:
+$ ansible-galaxy install -r requirements.yml
 
-	The following command must run successfully:
-	$ ansible docker_host -m ping 
+The following command must run successfully:
+$ ansible docker_host -m ping 
 
-	If one of the Ansible managed nodes is CentOS 7, the following command must be executed in that host before running the playbook:
+If one of the Ansible managed nodes is CentOS 7, the following command must be executed in that host before running the playbook:
+
+$ openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443 </dev/null 2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
 	
-	$ openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443 </dev/null 2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
-	
-	This command is required in CentOS 7 so Docker can pull images from the public Red Hat registry. In my case, the base image of the Tomcat Docker container is ubi8-minimal so this step would be required.
-	For more information: https://github.com/CentOS/sig-atomic-buildscripts/issues/329
+This command is required in CentOS 7 so Docker can pull images from the public Red Hat registry. In my case, the base image of the Tomcat Docker container is ubi8-minimal so this step would be required.
+For more information: https://github.com/CentOS/sig-atomic-buildscripts/issues/329
 
 How to run it:
 =========
