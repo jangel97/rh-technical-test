@@ -124,7 +124,34 @@ To make the Ansible playbook  works:
 - The Dockerfile must be in the path `<project_root>/roles/docker_container_builder_deployer/files`
 - The Pytest script must be in the path `<project_root>/roles/docker_container_test/files`
 - The playbook must be in the path `<project_root>/playbooks`
- 
+
+Delivery files:
+----------------
+**Dockerfile:**
+
+You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
+The Dockerfile is based on ubi8-minimal image.
+
+The package tzdata had to be reinstalled in the Dockerfile because of the following bug:
+- https://bugzilla.redhat.com/show_bug.cgi?id=1668185
+- https://bugzilla.redhat.com/show_bug.cgi?id=1674495
+- https://bugzilla.redhat.com/show_bug.cgi?id=1903219
+
+It seems that the files /usr/share/zoneinfo were missing in the ubi8-minimal container image.
+
+**Pytest Scripts:**
+
+You will find the pytest script in the path: `<PROJECT_ROOT/roles/docker_container_test/files`
+The pytest script consists of two files:
+- wrap_tests.py: 
+This python script executes the pytest script. First it validates that the parameters are fine. Afterwards, it executes the pytest script and then collects the result. Depending on the result the script will return a return code.
+
+- test_my_tomcat_docker_container.py
+This is the pytest script. This script will always receive a parameter that is going to be a json object with the information the parameters the test needs to run, so this way it can be more generic.
+
+**Ansible Playbook:**
+
+You will find the playbook in the path: `<PROJECT_ROOT>/playbooks`
 
 Project Structure
 ----------------
@@ -169,35 +196,6 @@ Project Structure
     ├── vars_pytest.yml
     └── vars_tomcat_docker_container.yml
 ```
-
-Delivery files:
-----------------
-**Dockerfile:**
-
-You will find the Dockerfile in the path: `<PROJECT_ROOT>/roles/docker_container_builder_deployer/files/Dockerfile.tomcat.ubi8-minimal`
-The Dockerfile is based on ubi8-minimal image.
-
-The package tzdata had to be reinstalled in the Dockerfile because of the following bug:
-- https://bugzilla.redhat.com/show_bug.cgi?id=1668185
-- https://bugzilla.redhat.com/show_bug.cgi?id=1674495
-- https://bugzilla.redhat.com/show_bug.cgi?id=1903219
-
-It seems that the files /usr/share/zoneinfo were missing in the ubi8-minimal container image.
-
-**Pytest Scripts:**
-
-You will find the pytest script in the path: `<PROJECT_ROOT/roles/docker_container_test/files`
-The pytest script consists of two files:
-- wrap_tests.py: 
-This python script executes the pytest script. First it validates that the parameters are fine. Afterwards, it executes the pytest script and then collects the result. Depending on the result the script will return a return code.
-
-- test_my_tomcat_docker_container.py
-This is the pytest script. This script will always receive a parameter that is going to be a json object with the information the parameters the test needs to run, so this way it can be more generic.
-
-**Ansible Playbook:**
-
-You will find the playbook in the path: `<PROJECT_ROOT>/playbooks`
-
 
 TODO Improvements:
 ----------------
