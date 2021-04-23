@@ -8,7 +8,7 @@ The role only supports Docker containers, as it interacts with the docker server
 
 Requirements
 ------------
-There should be a Dockerfile ubicated under the `files/` directory.
+There should be a Dockerfile located under the `files/` directory.
 
 Docker service must be runnning. 
 
