@@ -30,6 +30,7 @@ Role Variables
 The default value is compatibility, which will ensure that the default values are used when the values are not explicitly specified by the user.
 From community.docker 2.0.0 on, the default value will switch to no_defaults.
 (By default is no_defaults).
+
 For more information about this option check on this link: https://docs.ansible.com/ansible/latest/collections/community/docker/docker_container_module.html#parameter-container_default_behavior
 
 Dependencies
